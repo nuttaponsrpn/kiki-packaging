@@ -1,0 +1,32 @@
+{
+  "name": "kiki-packaging",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@nuxt/eslint": "1.10.0",
+    "@nuxt/hints": "1.0.0-alpha.2",
+    "@nuxt/image": "2.0.0",
+    "@nuxt/ui": "4.2.1",
+    "@nuxtjs/i18n": "^10.2.1",
+    "@supabase/supabase-js": "^2.84.0",
+    "dayjs": "^1.11.19",
+    "eslint": "^9.0.0",
+    "nuxt": "^4.2.1",
+    "typescript": "^5.6.3",
+    "valibot": "^1.1.0",
+    "vue": "^3.5.24",
+    "vue-router": "^4.6.3"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
+  "devDependencies": {
+    "@iconify-json/heroicons": "^1.2.3"
+  }
+}

@@ -1,0 +1,50 @@
+@theme {
+  /* Primary color for Kiki Packaging - Using orange/packaging theme */
+  --color-orange-50: #fff7ed;
+  --color-orange-100: #ffedd5;
+  --color-orange-200: #fed7aa;
+  --color-orange-300: #fdba74;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-orange-600: #e36600;
+  --color-orange-700: #c2410c;
+  --color-orange-800: #9a3412;
+  --color-orange-900: #7c2d12;
+  --color-orange-950: #431407;
+
+  --ui-primary: var(--color-orange-600);
+  --ui-error: var(--color-status-error);
+
+  /* ---------- Gray ---------- */
+  --color-gray-100: #f8f9fa;
+  --color-gray-200: #e9ecef;
+  --color-gray-300: #dee2e6;
+  --color-gray-400: #ced4da;
+  --color-gray-500: #adb5bd;
+  --color-gray-600: #6c757d;
+  --color-gray-700: #495057;
+  --color-gray-800: #343a40;
+  --color-gray-900: #212529;
+
+  /* ---------- Blue ---------- */
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-600: #2563eb;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-900: #1e3a8a;
+
+  /* ---------- Status ---------- */
+  --color-status-error: #dc3545;
+  --color-status-warning: #c69915;
+  --color-status-success: #198754;
+
+  /* Semantic color names for easier use */
+  --color-error: var(--color-status-error);
+  --color-warning: var(--color-status-warning);
+  --color-success: var(--color-status-success);
+}

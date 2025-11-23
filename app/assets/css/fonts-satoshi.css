@@ -1,0 +1,6 @@
+/* Satoshi Font */
+@font-face {
+  font-family: "Satoshi";
+  src: url("../fonts/Satoshi/Satoshi.ttf") format("truetype");
+  font-weight: 400 700;
+}

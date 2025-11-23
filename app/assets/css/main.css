@@ -1,0 +1,68 @@
+@import "./color.css";
+@import "./fonts-satoshi.css";
+@import "./fonts-sukhumvit.css";
+@import "./typography.css";
+
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --ui-text: var(--color-black);
+
+  /* ------------ Start Font ------------ */
+  --font-satoshi: "Satoshi", sans-serif;
+  --font-sukhumvit: "Sukhumvit", sans-serif;
+  --default-font-family: var(--font-satoshi);
+  /* ------------ End Font ------------ */
+
+  --text-base: clamp(0.875rem, 2.5vw, 1.125rem);
+
+  --text-lg: calc(var(--text-base) * 1.125);
+  --text-xl: calc(var(--text-base) * 1.25);
+  --text-2xl: calc(var(--text-base) * 1.5);
+  --text-3xl: calc(var(--text-base) * 1.875);
+  --text-4xl: calc(var(--text-base) * 2.25);
+  --text-5xl: calc(var(--text-base) * 3);
+  --text-6xl: calc(var(--text-base) * 3.75);
+  --text-7xl: calc(var(--text-base) * 4.5);
+  --text-8xl: calc(var(--text-base) * 6);
+  --text-9xl: calc(var(--text-base) * 8);
+}
+
+.font-satoshi {
+  font-family: var(--font-satoshi) !important;
+}
+.font-sukhumvit {
+  font-family: var(--font-sukhumvit) !important;
+}
+
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-gray-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-gray-400);
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed !important;
+}
