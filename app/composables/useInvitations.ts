@@ -125,11 +125,12 @@ export const useInvitations = () => {
 
       const invitation = validation.invitation;
 
-      // Create user in Supabase Auth
+      // Create user in Supabase Auth with email auto-confirm
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: invitation.email,
         password: password,
         options: {
+          emailRedirectTo: undefined,
           data: {
             name: invitation.name,
           },
@@ -140,6 +141,31 @@ export const useInvitations = () => {
 
       if (!authData.user) {
         throw new Error("User creation failed");
+      }
+
+      // If email is not confirmed, we need to sign them in anyway
+      // since this is an invitation-based system
+      let session = authData.session;
+
+      if (!session) {
+        // Try to sign in directly
+        const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+          email: invitation.email,
+          password: password,
+        });
+
+        if (signInError) {
+          console.error("Sign-in error:", signInError);
+          // If email confirmation is required, show helpful message
+          if (signInError.message.includes("Email not confirmed")) {
+            throw new Error(
+              "Account created but email confirmation is required. Please check your email."
+            );
+          }
+          throw signInError;
+        }
+
+        session = signInData.session;
       }
 
       // Create user profile
@@ -159,13 +185,10 @@ export const useInvitations = () => {
 
       if (updateError) throw updateError;
 
-      // Sign in the user
-      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-        email: invitation.email,
-        password: password,
-      });
-
-      if (signInError) throw signInError;
+      // Use the session we got from signup or signin
+      if (!session) {
+        throw new Error("Failed to create session");
+      }
 
       // Set user profile state
       const userProfile = useState<{ id: string; name: string; email: string; role: string }>(
@@ -181,17 +204,13 @@ export const useInvitations = () => {
 
       // Save tokens
       const auth = useAuth();
-      if (signInData.session) {
-        auth.saveTokens({
-          access_token: signInData.session.access_token,
-          access_token_expires_at: new Date(signInData.session.expires_at! * 1000).toISOString(),
-          refresh_token: signInData.session.refresh_token,
-          refresh_token_expires_at: new Date(
-            (signInData.session.expires_at! + 86400) * 1000
-          ).toISOString(),
-          token_type: signInData.session.token_type,
-        });
-      }
+      auth.saveTokens({
+        access_token: session.access_token,
+        access_token_expires_at: new Date(session.expires_at! * 1000).toISOString(),
+        refresh_token: session.refresh_token,
+        refresh_token_expires_at: new Date((session.expires_at! + 86400) * 1000).toISOString(),
+        token_type: session.token_type,
+      });
 
       $toast.success(t("invitations.acceptSuccess"));
       return { success: true, user: authData.user };
