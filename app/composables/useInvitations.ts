@@ -71,20 +71,34 @@ export const useInvitations = () => {
    */
   const validateToken = async (token: string) => {
     try {
-      const { data: invitation, error }: any = await supabase
+      console.log("Validating token:", token);
+
+      const { data: invitations, error } = await supabase
         .from("user_invitations")
         .select("*")
         .eq("invite_token", token)
-        .is("accepted_at", null)
-        .single();
+        .is("accepted_at", null);
 
-      if (error || !invitation) {
-        return { valid: false, error: "Invalid token" };
+      console.log("Query result:", { invitations, error });
+
+      if (error) {
+        console.error("Error querying invitation:", error);
+        return { valid: false, error: `Database error: ${error.message}` };
       }
+
+      if (!invitations || invitations.length === 0) {
+        console.warn("No invitation found for token:", token);
+        return { valid: false, error: "No invitation found with this token" };
+      }
+
+      const invitation = invitations[0];
+      console.log("Found invitation:", invitation);
 
       // Check if expired
       const expiresAt = new Date(invitation.expires_at);
       const now = new Date();
+
+      console.log("Expiry check:", { expiresAt, now, expired: now > expiresAt });
 
       if (now > expiresAt) {
         return { valid: false, error: "Token expired" };
@@ -93,7 +107,7 @@ export const useInvitations = () => {
       return { valid: true, invitation };
     } catch (error: any) {
       console.error("Error validating token:", error);
-      return { valid: false, error: error.message };
+      return { valid: false, error: error.message || "Unknown error" };
     }
   };
 
