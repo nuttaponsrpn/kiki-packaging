@@ -56,7 +56,7 @@ serve(async (req) => {
     }
 
     // Get app URL from environment or use default
-    const appUrl = "https://mail.kikicheesecake.com";
+    const appUrl = Deno.env.get("APP_URL") || "https://kiki-packaging.vercel.app";
     const invitationUrl = `${appUrl}/accept-invitation?token=${inviteToken}`;
 
     // Send email via Resend
@@ -67,7 +67,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Kiki Packaging <no-reply@kiki-packaging.com>",
+        from: "Kiki Packaging <no-reply@mail.kikicheesecake.com>",
         to: [email],
         subject: "You've been invited to join Kiki Packaging",
         html: `
