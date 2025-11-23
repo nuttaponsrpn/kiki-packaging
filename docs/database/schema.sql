@@ -122,16 +122,23 @@ CREATE TABLE IF NOT EXISTS public.packaging_products (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   name TEXT NOT NULL,
   description TEXT,
-  unit_price DECIMAL(10,2) NOT NULL CHECK (unit_price >= 0),
+  sku TEXT NOT NULL UNIQUE,
+  unit TEXT NOT NULL,
+  unit_price DECIMAL(10,2) NOT NULL DEFAULT 0 CHECK (unit_price >= 0),
   stock_quantity INTEGER NOT NULL DEFAULT 0 CHECK (stock_quantity >= 0),
+  category TEXT,
+  image_url TEXT,
   is_active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Index for active products
+-- Indexes for faster lookups
 CREATE INDEX IF NOT EXISTS idx_packaging_products_active ON public.packaging_products(is_active)
   WHERE is_active = true;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_packaging_products_sku ON public.packaging_products(sku);
+CREATE INDEX IF NOT EXISTS idx_packaging_products_category ON public.packaging_products(category)
+  WHERE category IS NOT NULL;
 
 -- Enable Row Level Security
 ALTER TABLE public.packaging_products ENABLE ROW LEVEL SECURITY;
@@ -348,13 +355,13 @@ CREATE TRIGGER log_order_status_update
 -- );
 
 -- Insert sample packaging products
--- INSERT INTO public.packaging_products (name, description, unit_price, stock_quantity)
+-- INSERT INTO public.packaging_products (name, description, sku, unit, unit_price, stock_quantity, category)
 -- VALUES
---   ('Small Box', 'Small cardboard box (20x20x20 cm)', 15.00, 100),
---   ('Medium Box', 'Medium cardboard box (40x40x40 cm)', 25.00, 75),
---   ('Large Box', 'Large cardboard box (60x60x60 cm)', 45.00, 50),
---   ('Bubble Wrap', 'Bubble wrap roll (50m)', 120.00, 30),
---   ('Packing Tape', 'Heavy duty packing tape', 35.00, 200);
+--   ('Small Box', 'Small cardboard box (20x20x20 cm)', 'BOX-S-001', 'box', 15.00, 100, 'Boxes'),
+--   ('Medium Box', 'Medium cardboard box (40x40x40 cm)', 'BOX-M-001', 'box', 25.00, 75, 'Boxes'),
+--   ('Large Box', 'Large cardboard box (60x60x60 cm)', 'BOX-L-001', 'box', 45.00, 50, 'Boxes'),
+--   ('Bubble Wrap', 'Bubble wrap roll (50m)', 'WRAP-001', 'roll', 120.00, 30, 'Wrapping'),
+--   ('Packing Tape', 'Heavy duty packing tape', 'TAPE-001', 'roll', 35.00, 200, 'Tape');
 
 -- ============================================================================
 -- VIEWS (Optional - for convenient querying)

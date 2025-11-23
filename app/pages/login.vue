@@ -48,6 +48,7 @@ const { t } = useI18n();
 const { $toast } = useNuxtApp();
 const router = useRouter();
 const auth = useAuth();
+const { logActivity } = useActivityLogs();
 
 const formData = ref({
   email: "",
@@ -119,6 +120,13 @@ const handleLogin = async () => {
       email: data.user.email!,
       role: userProfileData?.role || "staff",
     };
+
+    // Log login activity
+    await logActivity({
+      action: "login",
+      entity_type: "auth",
+      entity_name: data.user.email || "User",
+    });
 
     $toast.success(t("auth.loginSuccess"));
     await router.push("/dashboard");

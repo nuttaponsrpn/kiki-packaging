@@ -2,6 +2,7 @@ export const useInvitations = () => {
   const supabase = useSupabase();
   const { $toast } = useNuxtApp();
   const { t } = useI18n();
+  const { logActivity } = useActivityLogs();
 
   /**
    * Send an invitation to a new user
@@ -41,11 +42,24 @@ export const useInvitations = () => {
         .single();
 
       if (error) throw error;
+      if (!invitation) throw new Error("Invitation creation failed");
+
+      // Log activity
+      await logActivity({
+        action: "invite",
+        entity_type: "invitation",
+        entity_id: (invitation as any).id,
+        entity_name: data.email,
+        details: {
+          name: data.name,
+          role: data.role,
+        },
+      });
 
       // Send email via Edge Function
       try {
         const { error: emailError } = await supabase.functions.invoke("send-invitation-email", {
-          body: { email: data.email, name: data.name, inviteToken: invitation.invite_token },
+          body: { email: data.email, name: data.name, inviteToken: (invitation as any).invite_token },
         });
 
         if (emailError) {
@@ -184,6 +198,18 @@ export const useInvitations = () => {
         .eq("id", invitation.id);
 
       if (updateError) throw updateError;
+
+      // Log activity (as the new user)
+      await logActivity({
+        action: "accept_invitation",
+        entity_type: "invitation",
+        entity_id: invitation.id,
+        entity_name: invitation.email,
+        details: {
+          name: invitation.name,
+          role: invitation.role,
+        },
+      });
 
       $toast.success(t("invitations.acceptSuccess"));
       return { success: true, user: authData.user };

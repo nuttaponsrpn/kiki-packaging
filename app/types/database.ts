@@ -13,7 +13,6 @@ export interface Database {
         Row: {
           id: string;
           name: string;
-          email: string;
           role: "admin" | "staff";
           is_active: boolean;
           created_at: string;
@@ -22,7 +21,6 @@ export interface Database {
         Insert: {
           id: string;
           name: string;
-          email: string;
           role: "admin" | "staff";
           is_active?: boolean;
           created_at?: string;
@@ -31,7 +29,6 @@ export interface Database {
         Update: {
           id?: string;
           name?: string;
-          email?: string;
           role?: "admin" | "staff";
           is_active?: boolean;
           created_at?: string;
@@ -43,8 +40,12 @@ export interface Database {
           id: string;
           name: string;
           description: string | null;
+          sku: string;
+          unit: string;
           unit_price: number;
           stock_quantity: number;
+          category: string | null;
+          image_url: string | null;
           is_active: boolean;
           created_at: string;
           updated_at: string;
@@ -53,8 +54,12 @@ export interface Database {
           id?: string;
           name: string;
           description?: string | null;
+          sku: string;
+          unit: string;
           unit_price: number;
           stock_quantity?: number;
+          category?: string | null;
+          image_url?: string | null;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -63,8 +68,12 @@ export interface Database {
           id?: string;
           name?: string;
           description?: string | null;
+          sku?: string;
+          unit?: string;
           unit_price?: number;
           stock_quantity?: number;
+          category?: string | null;
+          image_url?: string | null;
           is_active?: boolean;
           created_at?: string;
           updated_at?: string;
@@ -112,8 +121,10 @@ export interface Database {
           action: string;
           entity_type: string;
           entity_id: string | null;
+          entity_name: string | null;
           details: Record<string, unknown> | null;
           ip_address: string | null;
+          user_agent: string | null;
           created_at: string;
         };
         Insert: {
@@ -122,8 +133,10 @@ export interface Database {
           action: string;
           entity_type: string;
           entity_id?: string | null;
+          entity_name?: string | null;
           details?: Record<string, unknown> | null;
           ip_address?: string | null;
+          user_agent?: string | null;
           created_at?: string;
         };
         Update: {
@@ -132,8 +145,10 @@ export interface Database {
           action?: string;
           entity_type?: string;
           entity_id?: string | null;
+          entity_name?: string | null;
           details?: Record<string, unknown> | null;
           ip_address?: string | null;
+          user_agent?: string | null;
           created_at?: string;
         };
       };

@@ -246,6 +246,7 @@ const { t, locale } = useI18n();
 const { $toast } = useNuxtApp();
 const auth = useAuth();
 const router = useRouter();
+const { logActivity } = useActivityLogs();
 
 // Dropdown states
 const showLangMenu = ref(false);
@@ -288,6 +289,13 @@ const handleLogout = async () => {
   showUserMenu.value = false;
 
   try {
+    // Log logout activity before clearing session
+    await logActivity({
+      action: "logout",
+      entity_type: "auth",
+      entity_name: userProfile.value?.email || "User",
+    });
+
     await auth.logout();
 
     // Clear user profile state
