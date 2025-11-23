@@ -185,33 +185,6 @@ export const useInvitations = () => {
 
       if (updateError) throw updateError;
 
-      // Use the session we got from signup or signin
-      if (!session) {
-        throw new Error("Failed to create session");
-      }
-
-      // Set user profile state
-      const userProfile = useState<{ id: string; name: string; email: string; role: string }>(
-        "userProfile"
-      );
-
-      userProfile.value = {
-        id: authData.user.id,
-        name: invitation.name,
-        email: invitation.email,
-        role: invitation.role,
-      };
-
-      // Save tokens
-      const auth = useAuth();
-      auth.saveTokens({
-        access_token: session.access_token,
-        access_token_expires_at: new Date(session.expires_at! * 1000).toISOString(),
-        refresh_token: session.refresh_token,
-        refresh_token_expires_at: new Date((session.expires_at! + 86400) * 1000).toISOString(),
-        token_type: session.token_type,
-      });
-
       $toast.success(t("invitations.acceptSuccess"));
       return { success: true, user: authData.user };
     } catch (error: any) {

@@ -39,26 +39,22 @@
         </div>
 
         <div v-if="invitation" class="bg-gray-50 rounded-lg p-4 mb-6">
-          <div class="grid grid-cols-2 gap-4 text-sm">
-            <div>
+          <div class="space-y-3 text-sm">
+            <div class="flex flex-wrap gap-x-2">
               <span class="text-gray-500">{{ t("users.name") }}:</span>
-              <span class="ml-2 font-medium text-gray-900">{{ invitation.name }}</span>
+              <span class="font-medium text-gray-900">{{ invitation.name }}</span>
             </div>
-            <div>
+            <div class="flex flex-wrap gap-x-2">
               <span class="text-gray-500">{{ t("users.email") }}:</span>
-              <span class="ml-2 font-medium text-gray-900">{{ invitation.email }}</span>
+              <span class="font-medium text-gray-900 break-all">{{ invitation.email }}</span>
             </div>
-            <div>
+            <div class="flex flex-wrap gap-x-2">
               <span class="text-gray-500">{{ t("users.role") }}:</span>
-              <span class="ml-2 font-medium text-gray-900">{{
-                t(`users.${invitation.role}`)
-              }}</span>
+              <span class="font-medium text-gray-900">{{ t(`users.${invitation.role}`) }}</span>
             </div>
-            <div>
+            <div class="flex flex-wrap gap-x-2">
               <span class="text-gray-500">{{ t("invitations.expiresAt") }}:</span>
-              <span class="ml-2 font-medium text-gray-900">{{
-                formatDate(invitation.expires_at)
-              }}</span>
+              <span class="font-medium text-gray-900">{{ formatDate(invitation.expires_at) }}</span>
             </div>
           </div>
         </div>
@@ -105,7 +101,6 @@ definePageMeta({
 
 const { t } = useI18n();
 const route = useRoute();
-const router = useRouter();
 const invitations = useInvitations();
 
 // State
@@ -176,8 +171,8 @@ const handleAccept = async () => {
   submitting.value = false;
 
   if (result.success) {
-    // Redirect to dashboard
-    await router.push("/dashboard");
+    // Redirect to login page
+    await navigateTo("/login");
   }
 };
 
