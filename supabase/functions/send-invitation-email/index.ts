@@ -55,6 +55,12 @@ serve(async (req) => {
       throw new Error("Missing required fields: email, name, or inviteToken");
     }
 
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      throw new Error(`Invalid email format: ${email}`);
+    }
+
     // Get app URL from environment or use default
     const appUrl = "https://kiki-packaging.vercel.app";
     const invitationUrl = `${appUrl}/accept-invitation?token=${inviteToken}`;
@@ -64,11 +70,11 @@ serve(async (req) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer re_jMzH2wpv_H6oJeXDfbRPnUoPq5DPyuuwU`,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
         from: "Kiki Packaging <no-reply@mail.kikicheesecake.com>",
-        to: [email],
+        to: email,
         subject: "You've been invited to join Kiki Packaging",
         html: `
           <!DOCTYPE html>
