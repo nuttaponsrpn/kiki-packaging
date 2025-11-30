@@ -138,13 +138,26 @@ const emit = defineEmits<{
 const { t } = useI18n();
 const route = useRoute();
 
-const navigation = [
-  { name: t("nav.dashboard"), href: "/dashboard", icon: "i-heroicons-home" },
-  { name: t("nav.orders"), href: "/orders", icon: "i-heroicons-shopping-cart" },
-  { name: t("nav.packaging"), href: "/packaging", icon: "i-heroicons-cube" },
-  { name: t("nav.users"), href: "/users", icon: "i-heroicons-users" },
-  { name: t("nav.activityLogs"), href: "/activity-logs", icon: "i-heroicons-document-text" },
-];
+import type { UserProfile } from "~/types/user";
+
+const userProfile = useState<UserProfile | null>("userProfile");
+
+const navigation = computed(() => {
+  const items = [
+    { name: t("nav.dashboard"), href: "/dashboard", icon: "i-heroicons-home" },
+    { name: t("nav.orders"), href: "/orders", icon: "i-heroicons-shopping-cart" },
+  ];
+
+  if (userProfile.value?.role === "admin") {
+    items.push(
+      { name: t("nav.packaging"), href: "/packaging", icon: "i-heroicons-cube" },
+      { name: t("nav.users"), href: "/users", icon: "i-heroicons-users" },
+      { name: t("nav.activityLogs"), href: "/activity-logs", icon: "i-heroicons-document-text" },
+    );
+  }
+
+  return items;
+});
 
 const isActive = (href: string) => {
   return route.path === href || route.path.startsWith(href + "/");
