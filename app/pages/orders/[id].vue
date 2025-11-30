@@ -8,9 +8,10 @@
           size="sm"
           color="neutral"
           variant="ghost"
+          class="dark:text-white"
           @click="navigateTo('/orders')"
         >
-          Back to Orders
+          {{ t("orders.backToOrders") }}
         </UButton>
       </div>
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

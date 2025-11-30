@@ -5,7 +5,7 @@
     :label="label"
     :name="name"
     :ui="{
-      label: 'font-weight-regular text-size-14 text-gray-700 ',
+      label: 'font-weight-regular text-size-14 text-gray-700 dark:text-gray-200',
       container: 'mt-1.5 h-fit',
     }"
   >
@@ -23,7 +23,7 @@
         root: 'w-full h-full [&_svg]:size-5 [&_path]:fill-gray-500 [&_svg]:ml-2 [&_input]:h-full',
         base:
           fontWeightClass +
-          'hide-number-arrows ring-0 bg-gray-200 focus-visible:ring-gray-700 focus-visible:ring-1 py-2 px-3 text-size-16 disabled:bg-gray-100 disabled:ring-0 aria-invalid:ring-status-error aria-invalid:ring-1' +
+          'hide-number-arrows ring-0 bg-gray-200 dark:bg-gray-700 focus-visible:ring-gray-700 dark:focus-visible:ring-gray-500 focus-visible:ring-1 py-2 px-3 text-size-16 text-gray-900 dark:text-white disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:ring-0 aria-invalid:ring-status-error aria-invalid:ring-1' +
           (!!leadingIcon ? ' pl-11' : ' '),
       }"
       @input="onlyNumbers"

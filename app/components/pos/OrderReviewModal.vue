@@ -54,7 +54,9 @@
             </div>
 
             <!-- Notes -->
-            <UFormField :label="t('orders.notesOptional')" class="w-full">
+            <UFormField :label="t('orders.notesOptional')" class="w-full" :ui="{
+              label: 'dark:text-white'
+            }">
               <UTextarea v-model="notes" :placeholder="t('orders.notesPlaceholder')" :rows="2" class="w-full" />
             </UFormField>
           </div>

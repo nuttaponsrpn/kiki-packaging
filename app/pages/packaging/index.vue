@@ -46,6 +46,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-heroicons-x-mark"
+                  class="dark:text-white"
                   :padded="false"
                   @click="searchQuery = ''"
                 />
@@ -176,19 +177,6 @@
           <!-- Content -->
           <div class="p-6 flex-1 flex flex-col">
             <div class="mb-4">
-              <div class="flex justify-between items-start gap-2 mb-2">
-                <UBadge
-                  color="primary"
-                  variant="subtle"
-                  size="xs"
-                  class="rounded-full px-2.5 py-0.5 font-semibold"
-                >
-                  {{ product.category || t("common.general") }}
-                </UBadge>
-                <span class="text-xs font-mono text-gray-400 font-medium tracking-wide">
-                  {{ product.sku }}
-                </span>
-              </div>
               <h3
                 class="font-bold text-xl text-gray-900 dark:text-white line-clamp-1 mb-2 group-hover:text-primary-500 transition-colors"
                 :title="product.name"
@@ -210,7 +198,7 @@
                   {{ t("common.price") }}
                 </p>
                 <div class="flex items-baseline gap-1">
-                  <span class="text-2xl font-black text-gray-900 dark:text-white">
+                  <span class="text-lg font-black text-gray-900 dark:text-white">
                     ฿{{ product.unit_price.toLocaleString() }}
                   </span>
                   <span class="text-xs text-gray-400 font-medium">/ {{ product.unit }}</span>
@@ -277,7 +265,7 @@
                   color="neutral"
                   variant="ghost"
                   icon="i-heroicons-x-mark"
-                  class="-my-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+                  class="-my-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 dark:text-white"
                   size="lg"
                   @click="closeModal"
                 />
@@ -320,7 +308,7 @@
                   </div>
 
                   <div class="grid gap-6">
-                    <UFormField :label="t('packaging.name')" required>
+                    <UFormField :label="t('packaging.name')" required :ui="{ label: 'dark:text-white' }">
                       <UInput
                         v-model="formData.name"
                         :placeholder="t('packaging.name')"
@@ -331,7 +319,7 @@
                       />
                     </UFormField>
 
-                    <UFormField :label="t('packaging.description')">
+                    <UFormField :label="t('packaging.description')" :ui="{ label: 'dark:text-white' }">
                       <UTextarea
                         v-model="formData.description"
                         :placeholder="t('packaging.descriptionPlaceholder')"
@@ -342,7 +330,7 @@
                       />
                     </UFormField>
 
-                    <UFormField :label="t('packaging.imageUrl')">
+                    <UFormField :label="t('packaging.imageUrl')" :ui="{ label: 'dark:text-white' }">
                       <UInput
                         v-model="formData.image_url"
                         placeholder="https://..."
@@ -367,7 +355,7 @@
                   </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                      <UFormField :label="t('packaging.unitPrice')" required>
+                      <UFormField :label="t('packaging.unitPrice')" required :ui="{ label: 'dark:text-white' }">
                         <UInput
                           v-model.number="formData.unit_price"
                           type="number"
@@ -379,7 +367,7 @@
                       </UFormField>
 
                       <div class="grid grid-cols-2 gap-3">
-                        <UFormField :label="t('packaging.stockQuantity')" required>
+                        <UFormField :label="t('packaging.stockQuantity')" required :ui="{ label: 'dark:text-white' }">
                           <UInput
                             v-model.number="formData.stock_quantity"
                             type="number"
@@ -390,7 +378,7 @@
                             :ui="{ base: 'rounded-2xl' }"
                           />
                         </UFormField>
-                        <UFormField :label="t('packaging.unit')" required>
+                        <UFormField :label="t('packaging.unit')" required :ui="{ label: 'dark:text-white' }">
                           <UInput
                             v-model="formData.unit"
                             placeholder="Unit"
@@ -471,7 +459,7 @@
                     color="neutral"
                     variant="ghost"
                     size="lg"
-                    class="rounded-xl font-medium px-6"
+                    class="rounded-xl font-medium px-6 dark:text-white"
                     @click="closeModal"
                   >
                     {{ t("common.cancel") }}

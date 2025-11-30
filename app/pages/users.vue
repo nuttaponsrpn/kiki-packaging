@@ -22,7 +22,7 @@
       </h2>
       <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700/50">
               <tr>
                 <th
@@ -110,56 +110,56 @@
     </div>
 
     <!-- Users Table -->
-    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
       <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-700/50">
             <tr>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
                 {{ t("users.name") }}
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
                 {{ t("users.email") }}
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
                 {{ t("users.role") }}
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
                 {{ t("users.status") }}
               </th>
               <th
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
                 {{ t("users.createdAt") }}
               </th>
               <th
                 v-if="isAdmin"
-                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
               >
                 {{ t("common.actions") }}
               </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
             <tr v-if="loading">
-              <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+              <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                 {{ t("common.loading") }}
               </td>
             </tr>
             <tr v-else-if="users.length === 0">
-              <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+              <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                 {{ t("common.noData") }}
               </td>
             </tr>
-            <tr v-for="user in users" v-else :key="user.id" class="hover:bg-gray-50">
+            <tr v-for="user in users" v-else :key="user.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/30">
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center">
                   <div class="h-10 w-10 shrink-0">
@@ -201,7 +201,7 @@
                   {{ user.is_active ? t("users.active") : t("users.inactive") }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                 {{ formatDate(user.created_at) }}
               </td>
               <td v-if="isAdmin" class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -321,9 +321,9 @@
           </Transition>
 
           <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
+            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 z-10">
               <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                   {{ t("users.editUser") }}
                 </h3>
                 <button class="text-gray-400 hover:text-gray-600" @click="closeEditModal">
@@ -349,12 +349,12 @@
                 />
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {{ t("users.role") }}
                   </label>
                   <select
                     v-model="formData.role"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     required
                   >
                     <option value="">{{ t("users.selectRole") }}</option>
@@ -412,19 +412,19 @@
           </Transition>
 
           <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
+            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 z-10">
               <div class="flex items-start mb-4">
                 <div class="shrink-0">
                   <Icon name="heroicons:exclamation-triangle" class="w-6 h-6 text-red-600" />
                 </div>
                 <div class="ml-3">
-                  <h3 class="text-lg font-semibold text-gray-900">
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     {{ t("invitations.revoke") }}
                   </h3>
-                  <p class="text-sm text-gray-500 mt-2">
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                     {{ t("invitations.confirmRevoke") }}
                   </p>
-                  <p class="text-sm font-medium text-gray-900 mt-2">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white mt-2">
                     {{ inviteToRevoke?.email }}
                   </p>
                 </div>
@@ -468,19 +468,19 @@
           </Transition>
 
           <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
+            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 z-10">
               <div class="flex items-start mb-4">
                 <div class="shrink-0">
                   <Icon name="heroicons:exclamation-triangle" class="w-6 h-6 text-red-600" />
                 </div>
                 <div class="ml-3">
-                  <h3 class="text-lg font-semibold text-gray-900">
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                     {{ t("users.deleteUser") }}
                   </h3>
-                  <p class="text-sm text-gray-500 mt-2">
+                  <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
                     {{ t("users.confirmDelete") }}
                   </p>
-                  <p class="text-sm font-medium text-gray-900 mt-2">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white mt-2">
                     {{ userToDelete?.name }}
                   </p>
                 </div>

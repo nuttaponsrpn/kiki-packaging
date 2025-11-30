@@ -2,7 +2,7 @@
   <div class="overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
     <div class="hidden md:block overflow-x-auto">
       <table class="w-full text-left text-sm">
-        <thead class="bg-gray-50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400">
+        <thead class="bg-gray-50 dark:bg-gray-700 text-gray-500 dark:text-gray-400">
           <tr>
             <th class="px-6 py-4 font-semibold">{{ t("packaging.name") }}</th>
             <th class="px-6 py-4 font-semibold text-right">{{ t("packaging.unitPrice") }}</th>
@@ -38,7 +38,6 @@
                   <div class="font-medium text-gray-900 dark:text-white">
                     {{ product.name }}
                   </div>
-                  <div class="text-xs text-gray-500 dark:text-gray-400">{{ product.sku }}</div>
                   <div v-if="product.description" class="text-xs text-gray-400 dark:text-gray-500 mt-0.5 line-clamp-1">
                     {{ product.description }}
                   </div>
@@ -56,7 +55,8 @@
               <UBadge
                 :color="product.stock_quantity > 10 ? 'neutral' : 'error'"
                 variant="subtle"
-                size="xs"
+                size="md"
+                class="dark:text-white p-2 rounded-lg"
               >
                 {{ product.stock_quantity }} {{ product.unit }}
               </UBadge>
@@ -70,6 +70,7 @@
                   size="xs"
                   color="neutral"
                   variant="soft"
+                  class="dark:text-white"
                   :disabled="getQuantity(product.id) <= 0"
                   @click="updateQuantity(product.id, getQuantity(product.id) - 1)"
                 />
@@ -87,6 +88,7 @@
                   size="xs"
                   color="neutral"
                   variant="soft"
+                  class="dark:text-white"
                   :disabled="getQuantity(product.id) >= product.stock_quantity"
                   @click="updateQuantity(product.id, getQuantity(product.id) + 1)"
                 />

@@ -11,8 +11,7 @@
   --color-orange-800: #9a3412;
   --color-orange-900: #7c2d12;
   --color-orange-950: #431407;
-
-  --ui-primary: var(--color-orange-600);
+  
   --ui-error: var(--color-status-error);
 
   /* ---------- Gray ---------- */
@@ -47,4 +46,12 @@
   --color-error: var(--color-status-error);
   --color-warning: var(--color-status-warning);
   --color-success: var(--color-status-success);
+}
+
+:root {
+  --ui-primary: var(--color-orange-600);
+}
+
+.dark {
+  --ui-primary: var(--color-orange-500);
 }

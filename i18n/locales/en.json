@@ -28,6 +28,7 @@
     "edit": "Edit",
     "error": "Error",
     "export": "Export",
+    "price": "Price",
     "filter": "Filter",
     "loading": "Loading...",
     "loadingProfile": "Loading your profile...",
@@ -36,6 +37,7 @@
     "noResults": "No results found",
     "save": "Save",
     "search": "Search",
+    "searchPlaceholder": "Search...",
     "status": "Status",
     "success": "Success"
   },
@@ -101,6 +103,7 @@
   "orders": {
     "accessDenied": "You don't have permission to access this order",
     "adminOnly": "Only administrators can delete orders",
+    "backToOrders": "Back to Orders",
     "cancelOrder": "Cancel Order",
     "cancelled": "Cancelled",
     "cannotEditCompleted": "Cannot edit completed or cancelled orders",
@@ -243,6 +246,7 @@
     "noLogs": "No activity logs found",
     "actions": {
       "create": "Create",
+      "created": "Create",
       "update": "Update",
       "delete": "Delete",
       "login": "Login",
@@ -251,7 +255,9 @@
       "accept_invitation": "Accept Invitation",
       "cancel": "Cancel",
       "reactivate": "Reactivate",
-      "status_change": "Status Change"
+      "status_change": "Status Change",
+      "status_changed": "Status Changed",
+      "delete_item": "Delete Item"
     },
     "entityTypes": {
       "packaging": "Packaging Product",

@@ -59,13 +59,6 @@
       >
         {{ t("orders.createNew") }}
       </UButton>
-      <UButton
-        v-else
-        variant="outline"
-        @click="clearFilters"
-      >
-        {{ t("common.clearFilters") }}
-      </UButton>
     </div>
 
     <!-- Orders List -->
@@ -99,11 +92,11 @@
             <div class="grid grid-cols-2 gap-2 text-sm">
               <div>
                 <span class="text-gray-500 dark:text-gray-400">{{ t("orders.total") }}:</span>
-                <span class="ml-1 font-medium">฿{{ order.total_price.toFixed(2) }}</span>
+                <span class="ml-1 font-medium dark:text-white">฿{{ order.total_price.toFixed(2) }}</span>
               </div>
               <div>
                 <span class="text-gray-500 dark:text-gray-400">{{ t("orders.createdBy") }}:</span>
-                <span class="ml-1">{{ order.user?.name || 'Unknown' }}</span>
+                <span class="ml-1 dark:text-white">{{ order.user?.name || 'Unknown' }}</span>
               </div>
               <div>
                 <span class="text-gray-500 dark:text-gray-400">{{ formatDate(order.created_at) }}</span>

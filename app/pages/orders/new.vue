@@ -13,7 +13,7 @@
         color="neutral"
         variant="soft"
         size="xl"
-        class="rounded-full absolute top-0 right-0"
+        class="rounded-full absolute top-0 right-0 dark:text-white"
         @click="navigateTo('/orders')"
       />
     </div>

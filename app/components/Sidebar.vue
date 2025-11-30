@@ -6,6 +6,7 @@
     >
       <!-- Logo -->
       <div class="flex h-16 shrink-0 items-center">
+        <img src="/favicon.ico" alt="Kiki Packaging" class="h-10 w-auto rounded-full mr-2" />
         <h2 class="text-size-20 font-bold text-orange-600 dark:text-orange-500">
           {{ t("common.appName") }}
         </h2>
@@ -77,7 +78,8 @@
       >
         <div class="flex grow flex-col gap-y-5 px-6 pb-4">
           <div class="flex h-16 shrink-0 items-center justify-between">
-            <h2 class="text-size-20 font-bold text-orange-600">
+            <img src="/favicon.ico" alt="Kiki Packaging" class="h-10 w-auto rounded-full mr-1" />
+            <h2 class="text-size-18 font-bold text-orange-600">
               {{ t("common.appName") }}
             </h2>
             <button type="button" class="-m-2.5 p-2.5" @click="emit('close')">
@@ -95,7 +97,7 @@
                       :class="[
                         isActive(item.href)
                           ? 'bg-orange-50 text-orange-600'
-                          : 'text-gray-700 hover:text-orange-600 hover:bg-gray-50',
+                          : 'text-gray-700 hover:text-orange-600 hover:bg-gray-50 dark:text-gray-200 dark:hover:text-orange-500 dark:hover:bg-gray-800/50',
                         'group flex gap-x-3 rounded-md p-3 text-sm font-semibold leading-6',
                       ]"
                       @click="emit('close')"

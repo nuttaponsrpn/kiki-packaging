@@ -4,7 +4,18 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
 
+  app: {
+    head: {
+      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    },
+  },
+
   modules: ["@nuxt/eslint", "@nuxt/hints", "@nuxt/image", "@nuxt/ui", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
+  
+  colorMode: {
+    preference: "system",
+    fallback: "light",
+  },
 
   css: ["~/assets/css/main.css"],
 

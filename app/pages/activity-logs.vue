@@ -16,24 +16,6 @@
         icon="i-heroicons-magnifying-glass"
         :placeholder="t('common.search')"
       />
-      <USelectMenu
-        v-model="selectedAction"
-        :options="actionOptions"
-        :placeholder="t('activityLogs.action')"
-      />
-      <USelectMenu
-        v-model="selectedEntityType"
-        :options="entityTypeOptions"
-        :placeholder="t('activityLogs.entityType')"
-      />
-      <UButton
-        v-if="selectedAction || selectedEntityType || searchQuery"
-        icon="i-heroicons-x-mark"
-        variant="outline"
-        @click="clearFilters"
-      >
-        {{ t("common.clearFilters") }}
-      </UButton>
     </div>
 
     <!-- Loading State -->
@@ -88,7 +70,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <UBadge :color="getActionColor(log.action)" variant="subtle" size="sm">
+                <UBadge :color="getActionColor(log.action)" variant="subtle" size="md">
                   {{ t(`activityLogs.actions.${log.action}`) }}
                 </UBadge>
               </td>
@@ -189,6 +171,7 @@ const actionOptions = [
   { label: t("activityLogs.actions.cancel"), value: "cancel" },
   { label: t("activityLogs.actions.reactivate"), value: "reactivate" },
   { label: t("activityLogs.actions.status_change"), value: "status_change" },
+  { label: t("activityLogs.actions.delete_item"), value: "delete_item" },
 ];
 
 const entityTypeOptions = [
@@ -265,18 +248,21 @@ const formatDate = (dateString: string) => {
 
 const getActionColor = (action: string) => {
   const colors: Record<string, string> = {
-    create: "green",
-    update: "blue",
-    delete: "red",
-    login: "purple",
-    logout: "gray",
-    invite: "yellow",
-    accept_invitation: "green",
-    cancel: "red",
-    reactivate: "green",
-    status_change: "blue",
+    create: "success",
+    created: "success",
+    update: "info",
+    delete: "error",
+    login: "primary",
+    logout: "warning",
+    invite: "warning",
+    accept_invitation: "success",
+    cancel: "error",
+    reactivate: "success",
+    status_change: "info",
+    status_changed: "info",
+    delete_item: "error",
   };
-  return (colors[action] || "gray") as any;
+  return (colors[action] || "neutral") as any;
 };
 
 const formatDetails = (details: Record<string, any>) => {
