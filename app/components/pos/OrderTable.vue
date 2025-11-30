@@ -132,13 +132,13 @@
                 <h3 class="font-bold text-gray-900 dark:text-white truncate pr-2">
                   {{ product.name }}
                 </h3>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ product.sku }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 text-ellipsis line-clamp-2">{{ product.description }}</p>
               </div>
               <div class="text-right">
                 <div class="font-bold text-primary-600 dark:text-primary-400">
                   ฿{{ product.unit_price.toLocaleString() }}
                 </div>
-                <div class="text-xs text-gray-500 dark:text-gray-400">
+                <div class="text-base text-gray-500 dark:text-gray-400">
                   / {{ product.unit }}
                 </div>
               </div>
@@ -148,7 +148,8 @@
               <UBadge
                 :color="product.stock_quantity > 10 ? 'neutral' : 'error'"
                 variant="subtle"
-                size="xs"
+                size="md"
+                class="dark:text-white p-2 rounded-lg"
               >
                 Stock: {{ product.stock_quantity }}
               </UBadge>
@@ -167,14 +168,15 @@
               size="sm"
               color="neutral"
               variant="soft"
+              class="dark:text-white"
               :disabled="getQuantity(product.id) <= 0"
               @click="updateQuantity(product.id, getQuantity(product.id) - 1)"
             />
             <UInput
               type="number"
               :model-value="getQuantity(product.id)"
-              class="w-20 text-center"
               :ui="{ base: 'text-center font-bold' }"
+              class="w-20 text-center"
               min="0"
               :max="product.stock_quantity"
               @update:model-value="(val) => updateQuantity(product.id, Number(val))"
@@ -184,6 +186,7 @@
               size="sm"
               color="neutral"
               variant="soft"
+              class="dark:text-white"
               :disabled="getQuantity(product.id) >= product.stock_quantity"
               @click="updateQuantity(product.id, getQuantity(product.id) + 1)"
             />

@@ -43,19 +43,19 @@
         <div class="flex items-center gap-6">
           <div>
             <div class="text-sm text-gray-500 dark:text-gray-400">{{ t("orders.selectedItems") }}</div>
-            <div class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedItemsCount }} {{ t("common.items") }}</div>
+            <div class="text-lg font-bold text-gray-900 dark:text-white">{{ selectedItemsCount }} {{ t("common.items") }}</div>
           </div>
           <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
           <div>
             <div class="text-sm text-gray-500 dark:text-gray-400">{{ t("orders.totalAmount") }}</div>
-            <div class="text-2xl font-black text-primary-600">฿{{ totalAmount.toLocaleString() }}</div>
+            <div class="text-lg font-black text-primary-600">฿{{ totalAmount.toLocaleString() }}</div>
           </div>
         </div>
 
         <UButton
           size="xl"
           color="primary"
-          class="px-8 font-bold rounded-xl shadow-lg shadow-primary-500/20"
+          class="px-4 font-bold rounded-xl shadow-lg shadow-primary-500/20"
           :disabled="selectedItemsCount === 0"
           @click="showReviewModal = true"
         >
