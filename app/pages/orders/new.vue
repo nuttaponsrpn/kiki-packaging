@@ -1,22 +1,21 @@
 <template>
   <div class="max-w-[1200px] mx-auto pb-24">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-8">
+    <div class="flex items-center justify-between mb-8 relative">
       <div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           {{ t("orders.createNew") }}
         </h1>
-        <p class="text-gray-500 dark:text-gray-400">Select products and quantities to create an order</p>
+        <p class="text-gray-500 dark:text-gray-400">{{ t("orders.selectProducts") }}</p>
       </div>
       <UButton
         icon="i-heroicons-x-mark"
         color="neutral"
-        variant="ghost"
-        size="lg"
+        variant="soft"
+        size="xl"
+        class="rounded-full absolute top-0 right-0"
         @click="navigateTo('/orders')"
-      >
-        Cancel
-      </UButton>
+      />
     </div>
 
     <!-- Search -->
@@ -24,7 +23,7 @@
       <UInput
         v-model="searchQuery"
         icon="i-heroicons-magnifying-glass"
-        placeholder="Search products..."
+        :placeholder="t('common.searchPlaceholder')"
         size="xl"
         :ui="{ base: 'rounded-2xl' }"
       />
@@ -43,12 +42,12 @@
       <div class="max-w-[1200px] mx-auto flex items-center justify-between">
         <div class="flex items-center gap-6">
           <div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Selected Items</div>
-            <div class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedItemsCount }} items</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">{{ t("orders.selectedItems") }}</div>
+            <div class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedItemsCount }} {{ t("common.items") }}</div>
           </div>
           <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
           <div>
-            <div class="text-sm text-gray-500 dark:text-gray-400">Total Amount</div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">{{ t("orders.totalAmount") }}</div>
             <div class="text-2xl font-black text-primary-600">฿{{ totalAmount.toLocaleString() }}</div>
           </div>
         </div>
@@ -60,7 +59,7 @@
           :disabled="selectedItemsCount === 0"
           @click="showReviewModal = true"
         >
-          Review Order
+          {{ t("orders.reviewOrder") }}
         </UButton>
       </div>
     </div>

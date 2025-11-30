@@ -81,7 +81,7 @@
               {{ t("common.appName") }}
             </h2>
             <button type="button" class="-m-2.5 p-2.5" @click="emit('close')">
-              <span class="sr-only">Close sidebar</span>
+              <span class="sr-only">{{ t("common.closeSidebar") }}</span>
               <UIcon name="i-heroicons-x-mark" class="h-6 w-6 text-gray-400" aria-hidden="true" />
             </button>
           </div>

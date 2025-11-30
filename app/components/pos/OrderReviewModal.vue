@@ -6,7 +6,7 @@
       }">
         <template #header>
           <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold text-gray-900 dark:text-white">Review Order</h3>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white">{{ t("orders.reviewOrder") }}</h3>
             <UButton
               color="info"
               variant="ghost"
@@ -49,20 +49,20 @@
 
             <!-- Total -->
             <div class="flex justify-between items-center pt-4 border-t border-gray-200 dark:border-gray-700">
-              <span class="text-lg font-bold text-gray-900 dark:text-white">Total Amount</span>
+              <span class="text-lg font-bold text-gray-900 dark:text-white">{{ t("orders.totalAmount") }}</span>
               <span class="text-2xl font-black text-primary-600">฿{{ total.toLocaleString() }}</span>
             </div>
 
             <!-- Notes -->
-            <UFormGroup label="Notes (Optional)" class="w-full">
-              <UTextarea v-model="notes" placeholder="Add order notes..." :rows="2" class="w-full" />
-            </UFormGroup>
+            <UFormField :label="t('orders.notesOptional')" class="w-full">
+              <UTextarea v-model="notes" :placeholder="t('orders.notesPlaceholder')" :rows="2" class="w-full" />
+            </UFormField>
           </div>
         </template>
 
         <template #footer>
           <div class="flex justify-end gap-3">
-            <UButton color="info" variant="ghost" @click="open = false"> Cancel </UButton>
+            <UButton color="info" variant="ghost" @click="open = false"> {{ t("common.cancel") }} </UButton>
             <UButton
               color="primary"
               size="lg"
@@ -70,7 +70,7 @@
               class="px-8 font-bold"
               @click="handleConfirm"
             >
-              Confirm Order
+              {{ t("orders.confirmOrder") }}
             </UButton>
           </div>
         </template>
@@ -81,6 +81,8 @@
 
 <script setup lang="ts">
 const open = defineModel<boolean>('open');
+
+const { t } = useI18n();
 
 const props = defineProps<{
   items: any[];

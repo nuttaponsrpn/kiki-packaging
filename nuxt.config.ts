@@ -4,9 +4,77 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: false,
 
-  modules: ["@nuxt/eslint", "@nuxt/hints", "@nuxt/image", "@nuxt/ui", "@nuxtjs/i18n"],
+  modules: ["@nuxt/eslint", "@nuxt/hints", "@nuxt/image", "@nuxt/ui", "@nuxtjs/i18n", "@vite-pwa/nuxt"],
 
   css: ["~/assets/css/main.css"],
+
+  pwa: {
+    registerType: "autoUpdate",
+    devOptions: {
+      enabled: true,
+      type: "module",
+    },
+    filename: "manifest.webmanifest",
+    manifest: {
+      name: "Kiki Packaging Backoffice",
+      short_name: "Kiki Pack",
+      description: "Efficient and modern packaging management system.",
+      theme_color: "#F4C430",
+      background_color: "#ffffff",
+      display: "standalone",
+      start_url: "/",
+      lang: "en",
+      icons: [
+        {
+          src: "/android-chrome-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+        {
+          src: "/android-chrome-512x512.png",
+          sizes: "512x512",
+          type: "image/png",
+        },
+      ],
+    },
+    workbox: {
+      globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+          handler: "NetworkFirst",
+          options: {
+            cacheName: "api-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+            },
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+        {
+          urlPattern: ({ request }) => request.destination === "image",
+          handler: "CacheFirst",
+          options: {
+            cacheName: "images-cache",
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 60 * 60 * 24, // 1 day
+            },
+            cacheableResponse: {
+              statuses: [0, 200],
+            },
+          },
+        },
+      ],
+    },
+    client: {
+      installPrompt: true,
+      periodicSyncForUpdates: 20,
+    },
+  },
 
   i18n: {
     locales: [

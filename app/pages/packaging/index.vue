@@ -8,7 +8,7 @@
             {{ t("packaging.title") }}
           </h1>
           <p class="text-lg text-gray-500 dark:text-gray-400 font-medium">
-            Manage your product inventory with ease
+            {{ t("packaging.subtitle") }}
           </p>
         </div>
         <UButton
@@ -32,7 +32,7 @@
             <UInput
               v-model="searchQuery"
               icon="i-heroicons-magnifying-glass"
-              :placeholder="t('common.search')"
+              :placeholder="t('common.searchPlaceholder')"
               size="xl"
               :ui="{
                 base: 'rounded-2xl shadow-none ring-0 focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400 bg-transparent',
@@ -95,8 +95,8 @@
         <p class="text-gray-500 dark:text-gray-400 mb-10 max-w-md text-lg leading-relaxed">
           {{
             searchQuery
-              ? "We couldn't find any products matching your filters. Try adjusting your search terms."
-              : "Your inventory is empty. Start by adding your first packaging product."
+              ? t("common.noResults")
+              : t("packaging.noProductsMessage")
           }}
         </p>
         <div class="flex gap-4">
@@ -147,7 +147,7 @@
               class="w-full h-full flex flex-col items-center justify-center text-gray-300 dark:text-gray-600 bg-gray-50 dark:bg-gray-800/50 group-hover:bg-gray-100 dark:group-hover:bg-gray-800 transition-colors"
             >
               <UIcon name="i-heroicons-photo" class="text-6xl opacity-50 mb-2" />
-              <span class="text-xs font-medium uppercase tracking-wider opacity-50">No Image</span>
+              <span class="text-xs font-medium uppercase tracking-wider opacity-50">{{ t("common.noImage") }}</span>
             </div>
 
             <!-- Status Badge -->
@@ -183,7 +183,7 @@
                   size="xs"
                   class="rounded-full px-2.5 py-0.5 font-semibold"
                 >
-                  {{ product.category || "General" }}
+                  {{ product.category || t("common.general") }}
                 </UBadge>
                 <span class="text-xs font-mono text-gray-400 font-medium tracking-wide">
                   {{ product.sku }}
@@ -198,7 +198,7 @@
               <p
                 class="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 h-10 leading-relaxed font-medium"
               >
-                {{ product.description || "No description available for this product." }}
+                {{ product.description || t("packaging.noDescription") }}
               </p>
             </div>
 
@@ -207,7 +207,7 @@
             >
               <div>
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
-                  Price
+                  {{ t("common.price") }}
                 </p>
                 <div class="flex items-baseline gap-1">
                   <span class="text-2xl font-black text-gray-900 dark:text-white">
@@ -219,7 +219,7 @@
 
               <div class="text-right">
                 <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
-                  In Stock
+                  {{ t("packaging.inStock") }}
                 </p>
                 <div
                   class="flex items-center justify-end gap-2 bg-gray-50 dark:bg-gray-700/30 px-3 py-1.5 rounded-xl"
@@ -268,8 +268,8 @@
                   <p class="text-sm text-gray-500 mt-1">
                     {{
                       editingProduct
-                        ? "Update product details and inventory"
-                        : "Add a new item to your packaging inventory"
+                        ? t("packaging.editDescription")
+                        : t("packaging.createDescription")
                     }}
                   </p>
                 </div>
@@ -302,7 +302,7 @@
                         class="flex flex-col items-center text-gray-400 group-hover:text-primary-500 transition-colors"
                       >
                         <UIcon name="i-heroicons-photo" class="text-4xl mb-2" />
-                        <span class="text-xs font-medium">Image Preview</span>
+                        <span class="text-xs font-medium">{{ t("packaging.imagePreview") }}</span>
                       </div>
                     </div>
                   </div>
@@ -316,11 +316,11 @@
                     >
                       <UIcon name="i-heroicons-cube" class="w-5 h-5" />
                     </div>
-                    <h4 class="font-bold text-lg">Product Details</h4>
+                    <h4 class="font-bold text-lg">{{ t("packaging.productDetails") }}</h4>
                   </div>
 
                   <div class="grid gap-6">
-                    <UFormGroup :label="t('packaging.name')" required>
+                    <UFormField :label="t('packaging.name')" required>
                       <UInput
                         v-model="formData.name"
                         :placeholder="t('packaging.name')"
@@ -329,20 +329,20 @@
                         class="w-full"
                         :ui="{ base: 'rounded-2xl' }"
                       />
-                    </UFormGroup>
+                    </UFormField>
 
-                    <UFormGroup :label="t('packaging.description')">
+                    <UFormField :label="t('packaging.description')">
                       <UTextarea
                         v-model="formData.description"
-                        placeholder="Describe your product..."
+                        :placeholder="t('packaging.descriptionPlaceholder')"
                         :rows="3"
                         size="xl"
                         class="w-full"
                         :ui="{ base: 'rounded-2xl w-full' }"
                       />
-                    </UFormGroup>
+                    </UFormField>
 
-                    <UFormGroup :label="t('packaging.imageUrl')">
+                    <UFormField :label="t('packaging.imageUrl')">
                       <UInput
                         v-model="formData.image_url"
                         placeholder="https://..."
@@ -351,7 +351,7 @@
                         class="w-full"
                         :ui="{ base: 'rounded-2xl' }"
                       />
-                    </UFormGroup>
+                    </UFormField>
                   </div>
                 </div>
 
@@ -363,42 +363,44 @@
                     >
                       <UIcon name="i-heroicons-currency-dollar" class="w-5 h-5" />
                     </div>
-                    <h4 class="font-bold text-lg">Inventory & Pricing</h4>
+                    <h4 class="font-bold text-lg">{{ t("packaging.inventoryPricing") }}</h4>
                   </div>
 
-                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <UFormGroup :label="t('packaging.unitPrice')" required>
-                      <UInput
-                        v-model.number="formData.unit_price"
-                        type="number"
-                        placeholder="0.00"
-                        icon="i-heroicons-banknotes"
-                        size="xl"
-                        :ui="{ base: 'rounded-2xl' }"
-                      />
-                    </UFormGroup>
-
-                    <UFormGroup :label="t('packaging.stockQuantity')" required>
-                      <div class="flex gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <UFormField :label="t('packaging.unitPrice')" required>
                         <UInput
-                          v-model.number="formData.stock_quantity"
+                          v-model.number="formData.unit_price"
                           type="number"
-                          placeholder="0"
-                          icon="i-heroicons-archive-box"
-                          class="flex-1"
+                          placeholder="0.00"
+                          icon="i-heroicons-banknotes"
                           size="xl"
                           :ui="{ base: 'rounded-2xl' }"
                         />
-                        <UInput
-                          v-model="formData.unit"
-                          placeholder="Unit"
-                          class="w-28"
-                          size="xl"
-                          :ui="{ base: 'rounded-2xl' }"
-                        />
+                      </UFormField>
+
+                      <div class="grid grid-cols-2 gap-3">
+                        <UFormField :label="t('packaging.stockQuantity')" required>
+                          <UInput
+                            v-model.number="formData.stock_quantity"
+                            type="number"
+                            placeholder="0"
+                            icon="i-heroicons-archive-box"
+                            size="xl"
+                            class="w-full"
+                            :ui="{ base: 'rounded-2xl' }"
+                          />
+                        </UFormField>
+                        <UFormField :label="t('packaging.unit')" required>
+                          <UInput
+                            v-model="formData.unit"
+                            placeholder="Unit"
+                            size="xl"
+                            class="w-full"
+                            :ui="{ base: 'rounded-2xl' }"
+                          />
+                        </UFormField>
                       </div>
-                    </UFormGroup>
-                  </div>
+                    </div>
                 </div>
 
                 <!-- Status (Edit Mode Only) -->
@@ -422,12 +424,12 @@
                         />
                       </div>
                       <div>
-                        <p class="font-bold text-gray-900 dark:text-white">Product Status</p>
+                        <p class="font-bold text-gray-900 dark:text-white">{{ t("packaging.productStatus") }}</p>
                         <p class="text-sm text-gray-500 dark:text-gray-400">
                           {{
                             formData.is_active
-                              ? "Product is visible and available for orders"
-                              : "Product is hidden from inventory"
+                              ? t("packaging.statusActiveDescription")
+                              : t("packaging.statusInactiveDescription")
                           }}
                         </p>
                       </div>
