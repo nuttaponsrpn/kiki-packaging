@@ -86,7 +86,7 @@ const handleLogin = async () => {
       access_token: data.session.access_token,
       access_token_expires_at: new Date(data.session.expires_at! * 1000).toISOString(),
       refresh_token: data.session.refresh_token,
-      refresh_token_expires_at: new Date((data.session.expires_at! + 86400) * 1000).toISOString(), // 24h from now
+      refresh_token_expires_at: new Date((data.session.expires_at! + 604800) * 1000).toISOString(), // 7 days from now
       token_type: data.session.token_type,
     });
 

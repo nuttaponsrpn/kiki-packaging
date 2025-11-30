@@ -144,7 +144,7 @@
                 <UBadge
                   :color="getStatusColor(order.status) as any"
                   variant="subtle"
-                  size="xs"
+                  size="md"
                 >
                   {{ getStatusLabel(order.status) }}
                 </UBadge>

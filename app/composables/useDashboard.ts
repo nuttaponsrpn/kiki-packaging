@@ -65,7 +65,7 @@ export const useDashboard = () => {
       let pendingQuery = supabase
         .from("orders")
         .select("*", { count: "exact", head: true })
-        .eq("status", "pending");
+        .eq("status", "processing");
 
       if (!isAdmin && userId) {
         pendingQuery = pendingQuery.eq("user_id", userId);

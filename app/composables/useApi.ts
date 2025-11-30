@@ -136,6 +136,10 @@ export const useApi = () => {
         } else {
           // Refresh failed, redirect to login or throw error
           console.error("Token refresh failed, user needs to re-authenticate");
+          auth.clearTokens();
+          if (import.meta.client) {
+            window.location.href = "/login";
+          }
           const errorData = await response.json().catch(() => ({}));
           throw new Error(errorData.message || "Authentication failed. Please login again.");
         }
