@@ -37,7 +37,7 @@ export const useCSVExport = () => {
    * Download CSV file
    */
   const downloadCSV = (csv: string, filename: string) => {
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
 
@@ -52,34 +52,41 @@ export const useCSVExport = () => {
   /**
    * Export orders to CSV
    */
+  /**
+   * Export orders to CSV
+   */
   const exportOrdersToCSV = (orders: any[], filename: string = "orders.csv") => {
     const headers = [
       "Order ID",
-      "Product Name",
-      "SKU",
-      "Quantity",
-      "Unit",
-      "Unit Price",
+      "Items",
       "Total Price",
       "Status",
       "Created By",
       "Created At",
-      "Notes",
     ];
 
-    const data = orders.map((order) => ({
-      "Order ID": order.id,
-      "Product Name": order.product?.name || "-",
-      SKU: order.product?.sku || "-",
-      Quantity: order.quantity,
-      Unit: order.product?.unit || "-",
-      "Unit Price": order.product?.unit_price || 0,
-      "Total Price": order.total_price,
-      Status: order.status,
-      "Created By": order.user?.name || "-",
-      "Created At": new Date(order.created_at).toLocaleString(),
-      Notes: order.notes || "",
-    }));
+    const data = orders.map((order) => {
+      // Format items
+      let itemsStr = "";
+      if (order.items && order.items.length > 0) {
+        itemsStr = order.items
+          .map((item: any) => `${item.product?.name || "Unknown"} x${item.quantity}`)
+          .join("; ");
+      } else if (order.legacy_product) {
+        itemsStr = `${order.legacy_product.name} x${order.quantity || 1}`;
+      } else {
+        itemsStr = "No items";
+      }
+
+      return {
+        "Order ID": order.id,
+        Items: itemsStr,
+        "Total Price": order.total_price.toFixed(2),
+        Status: order.status,
+        "Created By": order.user?.name || "Unknown",
+        "Created At": new Date(order.created_at).toLocaleString(),
+      };
+    });
 
     const csv = arrayToCSV(data, headers);
     downloadCSV(csv, filename);
