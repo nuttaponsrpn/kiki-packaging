@@ -1,0 +1,74 @@
+<div class="kiki-loader">
+  <div class="logo-container">
+    <img src="/android-chrome-192x192.png" alt="Kiki POS Logo">
+  </div>
+  <div class="spinner"></div>
+  <div class="loading-text">Kiki POS - Market Place</div>
+</div>
+
+<style>
+  .kiki-loader {
+    position: fixed;
+    inset: 0;
+    background-color: #ffd203;
+    /* Kiki Yellow */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+
+  .logo-container {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 1rem;
+    animation: pulse 2s infinite ease-in-out;
+  }
+
+  .logo-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #E94E34;
+    /* Kiki Red */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  .loading-text {
+    color: #E94E34;
+    font-weight: bold;
+    font-size: 1.5rem;
+    letter-spacing: 0.05em;
+    font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.05);
+    }
+
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
