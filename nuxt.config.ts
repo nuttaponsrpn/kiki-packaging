@@ -20,7 +20,7 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   pwa: {
-    registerType: "autoUpdate",
+    registerType: "prompt",
     devOptions: {
       enabled: true,
       type: "module",

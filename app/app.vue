@@ -3,6 +3,7 @@
     <NuxtRouteAnnouncer />
     <VitePwaManifest />
     <GlobalLoadingOverlay />
+    <PwaUpdateNotification />
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
