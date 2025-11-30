@@ -25,7 +25,7 @@
 
       <!-- Filters & Search Bar -->
       <div
-        class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700/50 p-2 mb-10 sticky top-4 z-30 backdrop-blur-xl bg-opacity-90 dark:bg-opacity-90"
+        class="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700/50 p-2 mb-10 top-4 z-30 backdrop-blur-xl bg-opacity-90 dark:bg-opacity-90"
       >
         <div class="flex flex-col md:flex-row gap-2">
           <div class="flex-1 relative group">
@@ -53,36 +53,6 @@
             </UInput>
           </div>
 
-          <div class="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
-            <USelectMenu
-              v-model="selectedCategory"
-              :options="categoryOptions"
-              :placeholder="t('packaging.category')"
-              class="w-48 flex-shrink-0"
-              size="xl"
-              :ui="{ base: 'rounded-2xl' }"
-            >
-              <template #leading>
-                <UIcon name="i-heroicons-tag" class="w-5 h-5 text-gray-400" />
-              </template>
-            </USelectMenu>
-
-            <div
-              v-if="userProfile?.role === 'admin'"
-              class="flex items-center px-4 bg-gray-50 dark:bg-gray-700/50 rounded-2xl border border-gray-100 dark:border-gray-600 flex-shrink-0 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              @click="showInactive = !showInactive"
-            >
-              <UCheckbox
-                v-model="showInactive"
-                :label="t('packaging.showInactive')"
-                :ui="{
-                  base: 'cursor-pointer',
-                  label: 'text-sm font-semibold text-gray-600 dark:text-gray-300 cursor-pointer',
-                }"
-                @click.stop
-              />
-            </div>
-          </div>
         </div>
       </div>
 
@@ -120,18 +90,18 @@
           <UIcon name="i-heroicons-cube" class="text-7xl text-primary-500" />
         </div>
         <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-          {{ searchQuery || selectedCategory ? t("common.noResults") : t("packaging.noProducts") }}
+          {{ searchQuery ? t("common.noResults") : t("packaging.noProducts") }}
         </h3>
         <p class="text-gray-500 dark:text-gray-400 mb-10 max-w-md text-lg leading-relaxed">
           {{
-            searchQuery || selectedCategory
+            searchQuery
               ? "We couldn't find any products matching your filters. Try adjusting your search terms."
               : "Your inventory is empty. Start by adding your first packaging product."
           }}
         </p>
         <div class="flex gap-4">
           <UButton
-            v-if="userProfile?.role === 'admin' && !searchQuery && !selectedCategory"
+            v-if="userProfile?.role === 'admin' && !searchQuery"
             icon="i-heroicons-plus"
             size="xl"
             color="primary"
@@ -141,15 +111,12 @@
             {{ t("packaging.addNew") }}
           </UButton>
           <UButton
-            v-else-if="searchQuery || selectedCategory"
+            v-else-if="searchQuery"
             variant="soft"
             size="xl"
             color="neutral"
             class="rounded-full px-8 font-medium"
-            @click="
-              searchQuery = '';
-              selectedCategory = null;
-            "
+            @click="searchQuery = ''"
           >
             {{ t("common.clearFilters") }}
           </UButton>
@@ -541,7 +508,6 @@ const { getAllPackaging, createPackaging, updatePackaging, deletePackaging, reac
 const products = ref<any[]>([]);
 const loading = ref(true);
 const searchQuery = ref("");
-const selectedCategory = ref<string | null>(null);
 const showInactive = ref(false);
 const isModalOpen = ref(false);
 const editingProduct = ref<any>(null);
@@ -564,13 +530,7 @@ const modalTitle = computed(() =>
   editingProduct.value ? t("packaging.editProduct") : t("packaging.newProduct")
 );
 
-const categoryOptions = computed(() => {
-  const categories = [...new Set(products.value.map((p) => p.category).filter(Boolean))];
-  return [
-    { label: "All Categories", value: null },
-    ...categories.map((cat) => ({ label: cat, value: cat })),
-  ];
-});
+
 
 const filteredProducts = computed(() => {
   let filtered = products.value;
@@ -586,10 +546,7 @@ const filteredProducts = computed(() => {
     );
   }
 
-  // Filter by category
-  if (selectedCategory.value) {
-    filtered = filtered.filter((p) => p.category === selectedCategory.value);
-  }
+
 
   // Filter by active status
   if (!showInactive.value) {

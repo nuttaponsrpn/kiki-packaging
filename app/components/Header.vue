@@ -53,16 +53,8 @@
                 <p class="text-sm font-semibold text-gray-900">{{ userProfile?.name || "User" }}</p>
                 <p class="text-xs text-gray-500 truncate">{{ userProfile?.email }}</p>
               </div>
-              <button
-                type="button"
-                class="flex w-full items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                @click="goToProfile"
-              >
-                <UIcon name="i-heroicons-user-circle" class="h-5 w-5" />
-                {{ t("nav.profile") }}
-              </button>
             </div>
-            <div class="border-t border-gray-100 py-1">
+            <div class="border-gray-100 py-1">
               <button
                 type="button"
                 class="flex w-full items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
