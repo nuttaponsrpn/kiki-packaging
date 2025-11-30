@@ -20,34 +20,58 @@ export const useDashboard = () => {
    */
   const getMetrics = async (): Promise<{ success: boolean; data?: DashboardMetrics; error?: string }> => {
     try {
+      const userProfile = useState<any>("userProfile");
+      const userId = userProfile.value?.id;
+      const isAdmin = userProfile.value?.role === "admin";
+
       // Get total orders count
-      const { count: totalOrders, error: ordersError } = await supabase
+      let ordersQuery = supabase
         .from("orders")
         .select("*", { count: "exact", head: true });
+      
+      if (!isAdmin && userId) {
+        ordersQuery = ordersQuery.eq("user_id", userId);
+      }
+
+      const { count: totalOrders, error: ordersError } = await ordersQuery;
 
       if (ordersError) throw ordersError;
 
-      // Get total products count (active only)
-      const { count: totalProducts, error: productsError } = await supabase
-        .from("packaging_products")
-        .select("*", { count: "exact", head: true })
-        .eq("is_active", true);
+      // Get total products count (active only) - Admin only
+      let totalProducts = 0;
+      if (isAdmin) {
+        const { count, error: productsError } = await supabase
+          .from("packaging_products")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true);
 
-      if (productsError) throw productsError;
+        if (productsError) throw productsError;
+        totalProducts = count || 0;
+      }
 
-      // Get total users count
-      const { count: totalUsers, error: usersError } = await supabase
-        .from("user_profiles")
-        .select("*", { count: "exact", head: true })
-        .eq("is_active", true);
+      // Get total users count - Admin only
+      let totalUsers = 0;
+      if (isAdmin) {
+        const { count, error: usersError } = await supabase
+          .from("user_profiles")
+          .select("*", { count: "exact", head: true })
+          .eq("is_active", true);
 
-      if (usersError) throw usersError;
+        if (usersError) throw usersError;
+        totalUsers = count || 0;
+      }
 
       // Get pending orders count
-      const { count: pendingOrders, error: pendingError } = await supabase
+      let pendingQuery = supabase
         .from("orders")
         .select("*", { count: "exact", head: true })
         .eq("status", "pending");
+
+      if (!isAdmin && userId) {
+        pendingQuery = pendingQuery.eq("user_id", userId);
+      }
+
+      const { count: pendingOrders, error: pendingError } = await pendingQuery;
 
       if (pendingError) throw pendingError;
 
@@ -55,8 +79,8 @@ export const useDashboard = () => {
         success: true,
         data: {
           totalOrders: totalOrders || 0,
-          totalProducts: totalProducts || 0,
-          totalUsers: totalUsers || 0,
+          totalProducts: totalProducts,
+          totalUsers: totalUsers,
           pendingOrders: pendingOrders || 0,
         },
       };
@@ -71,7 +95,11 @@ export const useDashboard = () => {
    */
   const getRecentActivity = async (limit: number = 10) => {
     try {
-      const { data, error } = await supabase
+      const userProfile = useState<any>("userProfile");
+      const userId = userProfile.value?.id;
+      const isAdmin = userProfile.value?.role === "admin";
+
+      let query = supabase
         .from("orders")
         .select(
           `
@@ -92,6 +120,12 @@ export const useDashboard = () => {
         )
         .order("created_at", { ascending: false })
         .limit(limit);
+
+      if (!isAdmin && userId) {
+        query = query.eq("user_id", userId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
 

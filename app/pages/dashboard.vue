@@ -40,7 +40,7 @@
           </div>
         </UCard>
 
-        <UCard>
+        <UCard v-if="userProfile?.role === 'admin'">
           <div class="flex items-center">
             <div class="shrink-0">
               <UIcon name="i-heroicons-cube" class="h-10 w-10 text-blue-600" />
@@ -56,7 +56,7 @@
           </div>
         </UCard>
 
-        <UCard>
+        <UCard v-if="userProfile?.role === 'admin'">
           <div class="flex items-center">
             <div class="shrink-0">
               <UIcon name="i-heroicons-users" class="h-10 w-10 text-green-600" />
@@ -89,8 +89,8 @@
         </UCard>
       </div>
 
-      <!-- Low Stock Alerts -->
-      <div v-if="lowStockProducts.length > 0" class="mb-8">
+      <!-- Low Stock Alerts (Admin Only) -->
+      <div v-if="userProfile?.role === 'admin' && lowStockProducts.length > 0" class="mb-8">
         <UCard>
           <template #header>
             <div class="flex items-center justify-between">
@@ -142,7 +142,7 @@
             <div class="flex-1">
               <div class="flex items-center gap-2 mb-2">
                 <UBadge
-                  :color="getStatusColor(order.status)"
+                  :color="getStatusColor(order.status) as any"
                   variant="subtle"
                   size="xs"
                 >
@@ -179,6 +179,7 @@ definePageMeta({
 
 const { t } = useI18n();
 const { getMetrics, getRecentActivity, getLowStockAlerts } = useDashboard();
+const userProfile = useState<any>("userProfile");
 
 // State
 const loading = ref(true);
