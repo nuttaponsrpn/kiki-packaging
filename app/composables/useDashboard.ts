@@ -80,9 +80,13 @@ export const useDashboard = () => {
             id,
             name
           ),
-          product:packaging_product_id (
+          items:order_items (
             id,
-            name
+            quantity,
+            product:packaging_product_id (
+              id,
+              name
+            )
           )
         `
         )

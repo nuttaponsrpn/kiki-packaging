@@ -18,7 +18,8 @@ export interface ActivityLog {
     | "accept_invitation"
     | "cancel"
     | "reactivate"
-    | "status_change";
+    | "status_change"
+    | "delete_item";
   entity_type: "packaging" | "order" | "user" | "invitation" | "auth";
   entity_id?: string;
   entity_name?: string;

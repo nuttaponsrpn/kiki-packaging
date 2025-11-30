@@ -40,6 +40,7 @@
                 >
                   {{ t("users.role") }}
                 </th>
+
                 <th
                   class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
@@ -132,6 +133,11 @@
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
+                {{ t("users.status") }}
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 {{ t("users.createdAt") }}
               </th>
               <th
@@ -181,6 +187,18 @@
                   "
                 >
                   {{ t(`users.${user.role}`) }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span
+                  class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                  :class="
+                    user.is_active
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-red-100 text-red-800'
+                  "
+                >
+                  {{ user.is_active ? t("users.active") : t("users.inactive") }}
                 </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -345,6 +363,17 @@
                   </select>
                 </div>
 
+                <div>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input
+                      v-model="formData.is_active"
+                      type="checkbox"
+                      class="form-checkbox h-5 w-5 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
+                    />
+                    <span class="text-sm font-medium text-gray-700">{{ t("users.active") }}</span>
+                  </label>
+                </div>
+
                 <div class="flex justify-end gap-3 mt-6">
                   <MyButton
                     type="button"
@@ -467,7 +496,6 @@
                 <MyButton
                   type="button"
                   variant="solid"
-                  class="bg-red-600 hover:bg-red-700"
                   :label="t('common.delete')"
                   :loading="submitting"
                   @click="handleDelete"
@@ -522,6 +550,7 @@ const formData = ref({
   name: "",
   email: "",
   role: "",
+  is_active: true,
 });
 
 // Check admin access
@@ -644,6 +673,7 @@ const updateUser = async () => {
       .update({
         name: formData.value.name,
         role: formData.value.role,
+        is_active: formData.value.is_active,
       })
       .eq("id", editingUser.value.id);
 
@@ -667,6 +697,7 @@ const editUser = (user: any) => {
     name: user.name,
     email: user.email,
     role: user.role,
+    is_active: user.is_active,
   };
   showEditModal.value = true;
 };
@@ -679,6 +710,7 @@ const closeEditModal = () => {
     name: "",
     email: "",
     role: "",
+    is_active: true,
   };
 };
 
@@ -694,21 +726,17 @@ const confirmDeleteUser = (user: any) => {
 
 // Delete user
 const handleDelete = async () => {
+  console.log("handleDelete called", userToDelete.value);
   if (!userToDelete.value) return;
 
   submitting.value = true;
   try {
-    // Delete user profile
-    const { error: profileError } = await supabase
-      .from("user_profiles")
-      .delete()
-      .eq("id", userToDelete.value.id);
+    console.log("Calling Supabase Edge Function...");
+    const { error: invokeError } = await supabase.functions.invoke('delete-user', {
+      body: { userId: userToDelete.value.id }
+    });
 
-    if (profileError) throw profileError;
-
-    // Delete user from auth
-    const { error: authError } = await supabase.auth.admin.deleteUser(userToDelete.value.id);
-    if (authError) throw authError;
+    if (invokeError) throw invokeError;
 
     $toast.success(t("users.userDeleted"));
     await fetchUsers();

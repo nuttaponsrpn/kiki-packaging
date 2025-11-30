@@ -3,28 +3,42 @@
  * Handles all CRUD operations for packaging orders
  */
 
+export interface OrderItem {
+  id: string;
+  packaging_product_id: string;
+  quantity: number;
+  unit_price: number;
+  total_price: number;
+  product?: {
+    name: string;
+    unit: string;
+  };
+}
+
 export interface Order {
   id: string;
   user_id: string;
-  packaging_product_id: string;
-  quantity: number;
   total_price: number;
   status: "pending" | "processing" | "completed" | "cancelled";
+  payment_method: "cash" | "transfer" | null;
   notes: string | null;
   created_at: string;
   updated_at: string;
+  items?: OrderItem[];
+  user?: {
+    name: string;
+  };
+}
+
+export interface CreateOrderItemData {
+  productId: string;
+  quantity: number;
+  price: number;
 }
 
 export interface CreateOrderData {
-  packaging_product_id: string;
-  quantity: number;
-  notes?: string;
-}
-
-export interface UpdateOrderData {
-  packaging_product_id?: string;
-  quantity?: number;
-  status?: "pending" | "processing" | "completed" | "cancelled";
+  items: CreateOrderItemData[];
+  paymentMethod: "cash" | "transfer";
   notes?: string;
 }
 
@@ -55,12 +69,19 @@ export const useOrders = () => {
             id,
             name
           ),
-          product:packaging_product_id (
+          items:order_items (
             id,
+            quantity,
+            unit_price,
+            total_price,
+            product:packaging_product_id (
+              name,
+              unit
+            )
+          ),
+          legacy_product:packaging_product_id (
             name,
-            sku,
-            unit,
-            unit_price
+            unit
           )
         `
         )
@@ -96,10 +117,9 @@ export const useOrders = () => {
         const query = options.searchQuery.toLowerCase();
         filteredData = filteredData.filter(
           (order: any) =>
-            order.product?.name.toLowerCase().includes(query) ||
-            order.product?.sku.toLowerCase().includes(query) ||
             order.user?.name.toLowerCase().includes(query) ||
-            order.notes?.toLowerCase().includes(query)
+            order.notes?.toLowerCase().includes(query) ||
+            order.items?.some((item: any) => item.product?.name.toLowerCase().includes(query))
         );
       }
 
@@ -126,14 +146,20 @@ export const useOrders = () => {
             name,
             role
           ),
-          product:packaging_product_id (
+          items:order_items (
             id,
-            name,
-            description,
-            sku,
-            unit,
+            quantity,
             unit_price,
-            stock_quantity
+            total_price,
+            product:packaging_product_id (
+              id,
+              name,
+              description,
+              sku,
+              unit,
+              unit_price,
+              image_url
+            )
           )
         `
         )
@@ -165,63 +191,64 @@ export const useOrders = () => {
         throw new Error("User not authenticated");
       }
 
-      // Get product details to calculate price
-      const { data: product, error: productError } = await supabase
-        .from("packaging_products")
-        .select("unit_price, stock_quantity")
-        .eq("id", data.packaging_product_id)
-        .single();
+      // Calculate total price
+      const totalPrice = data.items.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
-      if (productError) throw productError;
-
-      // Check stock availability
-      if (product.stock_quantity < data.quantity) {
-        $toast.error(t("orders.insufficientStock"));
-        return { success: false, error: "Insufficient stock" };
-      }
-
-      const total_price = product.unit_price * data.quantity;
-
-      const { data: newOrder, error } = await supabase
+      // 1. Create Order
+      const { data: newOrder, error: orderError } = await supabase
         .from("orders")
         .insert({
           user_id: userProfile.value.id,
-          packaging_product_id: data.packaging_product_id,
-          quantity: data.quantity,
-          total_price: total_price,
+          total_price: totalPrice,
+          payment_method: data.paymentMethod,
           notes: data.notes || null,
-          status: "pending",
+          status: "processing",
         })
-        .select(
-          `
-          *,
-          user:user_id (
-            id,
-            name
-          ),
-          product:packaging_product_id (
-            id,
-            name,
-            sku,
-            unit
-          )
-        `
-        )
+        .select()
         .single();
 
-      if (error) throw error;
+      if (orderError) throw orderError;
       if (!newOrder) throw new Error("Order creation failed");
+
+      // 2. Create Order Items
+      const orderItems = data.items.map((item) => ({
+        order_id: newOrder.id,
+        packaging_product_id: item.productId,
+        quantity: item.quantity,
+        unit_price: item.price,
+        total_price: item.quantity * item.price,
+      }));
+
+      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // 3. Update Stock (Client-side for now, ideally server-side or RPC)
+      for (const item of data.items) {
+        // Fetch current stock first to ensure atomic-like update (simplified)
+        const { data: product } = await supabase
+          .from("packaging_products")
+          .select("stock_quantity")
+          .eq("id", item.productId)
+          .single();
+
+        if (product) {
+          await supabase
+            .from("packaging_products")
+            .update({ stock_quantity: product.stock_quantity - item.quantity })
+            .eq("id", item.productId);
+        }
+      }
 
       // Log activity
       await logActivity({
         action: "create",
         entity_type: "order",
-        entity_id: (newOrder as any).id,
-        entity_name: (newOrder as any).product?.name || "Order",
+        entity_id: newOrder.id,
+        entity_name: `Order #${newOrder.id.slice(0, 8)}`,
         details: {
-          quantity: (newOrder as any).quantity,
-          total_price: (newOrder as any).total_price,
-          product_id: data.packaging_product_id,
+          items_count: data.items.length,
+          total_price: totalPrice,
         },
       });
 
@@ -235,97 +262,38 @@ export const useOrders = () => {
   };
 
   /**
-   * Update an order
+   * Restore stock for an order
    */
-  const updateOrder = async (id: string, data: UpdateOrderData) => {
+  const restoreStock = async (orderId: string) => {
     try {
-      // Get existing order to check permissions
-      const { data: existingOrder } = await supabase
-        .from("orders")
-        .select("user_id, status")
-        .eq("id", id)
-        .single();
+      // Get order items
+      const { data: items, error } = await supabase
+        .from("order_items")
+        .select("packaging_product_id, quantity")
+        .eq("order_id", orderId);
 
-      if (!existingOrder) {
-        throw new Error("Order not found");
-      }
+      if (error) throw error;
+      if (!items) return;
 
-      // Check permissions
-      const isOwner = existingOrder.user_id === userProfile.value?.id;
-      const isAdmin = userProfile.value?.role === "admin";
-
-      if (!isOwner && !isAdmin) {
-        $toast.error(t("orders.accessDenied"));
-        return { success: false, error: "Access denied" };
-      }
-
-      // Staff can only update pending orders
-      if (!isAdmin && existingOrder.status !== "pending") {
-        $toast.error(t("orders.cannotEditCompleted"));
-        return { success: false, error: "Cannot edit non-pending order" };
-      }
-
-      const updateData: any = {
-        ...data,
-        updated_at: new Date().toISOString(),
-      };
-
-      // Recalculate price if product or quantity changed
-      if (data.packaging_product_id || data.quantity) {
-        const productId = data.packaging_product_id || existingOrder.packaging_product_id;
+      // Restore stock for each item
+      for (const item of items) {
+        // Fetch current stock
         const { data: product } = await supabase
           .from("packaging_products")
-          .select("unit_price")
-          .eq("id", productId)
+          .select("stock_quantity")
+          .eq("id", item.packaging_product_id)
           .single();
 
         if (product) {
-          const quantity = data.quantity || existingOrder.quantity;
-          updateData.total_price = product.unit_price * quantity;
+          await supabase
+            .from("packaging_products")
+            .update({ stock_quantity: product.stock_quantity + item.quantity })
+            .eq("id", item.packaging_product_id);
         }
       }
-
-      const { data: updatedOrder, error } = await supabase
-        .from("orders")
-        .update(updateData)
-        .eq("id", id)
-        .select(
-          `
-          *,
-          user:user_id (
-            id,
-            name
-          ),
-          product:packaging_product_id (
-            id,
-            name,
-            sku,
-            unit
-          )
-        `
-        )
-        .single();
-
-      if (error) throw error;
-      if (!updatedOrder) throw new Error("Order update failed");
-
-      // Log activity
-      await logActivity({
-        action: "update",
-        entity_type: "order",
-        entity_id: (updatedOrder as any).id,
-        entity_name: (updatedOrder as any).product?.name || "Order",
-        details: {
-          changes: data,
-        },
-      });
-
-      $toast.success(t("orders.updateSuccess"));
-      return { success: true, data: updatedOrder };
-    } catch (error: any) {
-      console.error("Error updating order:", error);
-      $toast.error(t("orders.updateError"));
-      return { success: false, error: error.message };
+    } catch (error) {
+      console.error("Error restoring stock:", error);
+      throw error;
     }
   };
 
@@ -339,15 +307,17 @@ export const useOrders = () => {
         return { success: false, error: "Admin access required" };
       }
 
-      // Get order details before deleting
+      // Check order status before deleting
       const { data: order } = await supabase
         .from("orders")
-        .select(`
-          *,
-          product:packaging_product_id (name)
-        `)
+        .select("status")
         .eq("id", id)
         .single();
+
+      // If order is pending or processing, restore stock before deleting
+      if (order && (order.status === "pending" || order.status === "processing")) {
+        await restoreStock(id);
+      }
 
       const { error } = await supabase.from("orders").delete().eq("id", id);
 
@@ -358,7 +328,7 @@ export const useOrders = () => {
         action: "delete",
         entity_type: "order",
         entity_id: id,
-        entity_name: (order as any)?.product?.name || "Order",
+        entity_name: `Order #${id.slice(0, 8)}`,
       });
 
       $toast.success(t("orders.deleteSuccess"));
@@ -378,16 +348,6 @@ export const useOrders = () => {
     status: "pending" | "processing" | "completed" | "cancelled"
   ) => {
     try {
-      // Get order details for logging
-      const { data: order } = await supabase
-        .from("orders")
-        .select(`
-          *,
-          product:packaging_product_id (name)
-        `)
-        .eq("id", id)
-        .single();
-
       const { data, error } = await supabase
         .from("orders")
         .update({ status, updated_at: new Date().toISOString() })
@@ -402,9 +362,8 @@ export const useOrders = () => {
         action: status === "cancelled" ? "cancel" : "status_change",
         entity_type: "order",
         entity_id: id,
-        entity_name: (order as any)?.product?.name || "Order",
+        entity_name: `Order #${id.slice(0, 8)}`,
         details: {
-          old_status: (order as any)?.status,
           new_status: status,
         },
       });
@@ -419,42 +378,78 @@ export const useOrders = () => {
   };
 
   /**
-   * Cancel an order
+   * Delete an order item
    */
-  const cancelOrder = async (id: string) => {
-    return updateOrderStatus(id, "cancelled");
-  };
-
-  /**
-   * Get order statistics
-   */
-  const getOrderStats = async () => {
+  const deleteOrderItem = async (orderId: string, itemId: string) => {
     try {
-      const { count: totalOrders } = await supabase
-        .from("orders")
-        .select("*", { count: "exact", head: true });
+      // 1. Get the item and order details
+      const { data: item, error: itemError } = await supabase
+        .from("order_items")
+        .select("quantity, total_price, packaging_product_id")
+        .eq("id", itemId)
+        .single();
 
-      const { count: pendingOrders } = await supabase
-        .from("orders")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "pending");
+      if (itemError) throw itemError;
 
-      const { count: completedOrders } = await supabase
+      const { data: order, error: orderError } = await supabase
         .from("orders")
-        .select("*", { count: "exact", head: true })
-        .eq("status", "completed");
+        .select("status, total_price")
+        .eq("id", orderId)
+        .single();
 
-      return {
-        success: true,
-        data: {
-          total: totalOrders || 0,
-          pending: pendingOrders || 0,
-          completed: completedOrders || 0,
+      if (orderError) throw orderError;
+
+      // 2. Restore stock if order is pending or processing
+      if (order.status === "pending" || order.status === "processing") {
+        const { data: product } = await supabase
+          .from("packaging_products")
+          .select("stock_quantity")
+          .eq("id", item.packaging_product_id)
+          .single();
+
+        if (product) {
+          await supabase
+            .from("packaging_products")
+            .update({ stock_quantity: product.stock_quantity + item.quantity })
+            .eq("id", item.packaging_product_id);
+        }
+      }
+
+      // 3. Delete the item
+      const { error: deleteError } = await supabase
+        .from("order_items")
+        .delete()
+        .eq("id", itemId);
+
+      if (deleteError) throw deleteError;
+
+      // 4. Update order total price
+      const newTotal = Math.max(0, order.total_price - item.total_price);
+      const { error: updateError } = await supabase
+        .from("orders")
+        .update({ total_price: newTotal })
+        .eq("id", orderId);
+
+      if (updateError) throw updateError;
+
+      // Log activity
+      await logActivity({
+        action: "delete_item",
+        entity_type: "order",
+        entity_id: orderId,
+        entity_name: `Order #${orderId.slice(0, 8)}`,
+        details: {
+          item_id: itemId,
+          restored_stock: order.status === "pending" || order.status === "processing",
         },
-      };
+      });
+
+      $toast.success(t("orders.itemDeleteSuccess"));
+      return { success: true };
     } catch (error: any) {
-      console.error("Error fetching order stats:", error);
-      return { success: false, data: null, error: error.message };
+      console.error("Error deleting order item:", error);
+      $toast.error(t("orders.itemDeleteError"));
+      return { success: false, error: error.message };
     }
   };
 
@@ -462,10 +457,8 @@ export const useOrders = () => {
     getAllOrders,
     getOrderById,
     createOrder,
-    updateOrder,
     deleteOrder,
+    deleteOrderItem,
     updateOrderStatus,
-    cancelOrder,
-    getOrderStats,
   };
 };

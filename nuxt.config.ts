@@ -22,6 +22,9 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Private keys (server-side only)
+    supabaseServiceKey: process.env.NUXT_SUPABASE_SERVICE_KEY || "",
+
     // Client-side (public)
     public: {
       appName: "Kiki Packaging Backoffice",

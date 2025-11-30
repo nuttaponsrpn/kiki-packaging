@@ -153,13 +153,13 @@
                 </span>
               </div>
               <p class="font-medium text-gray-900 dark:text-white">
-                {{ order.product?.name || 'Unknown Product' }}
+                {{ getOrderSummary(order) }}
               </p>
               <p class="text-sm text-gray-600 dark:text-gray-400">
                 {{ t("orders.createdBy") }}: {{ order.user?.name || 'Unknown User' }}
               </p>
               <p class="text-sm text-gray-500 dark:text-gray-500">
-                {{ t("orders.quantity") }}: {{ order.quantity }} - {{ t("orders.total") }}: ฿{{ order.total_price.toFixed(2) }}
+                {{ t("orders.total") }}: ฿{{ order.total_price.toFixed(2) }}
               </p>
             </div>
             <div>
@@ -213,12 +213,12 @@ const loadDashboardData = async () => {
 
 const getStatusColor = (status: string) => {
   const colors: Record<string, string> = {
-    pending: "yellow",
-    processing: "blue",
-    completed: "green",
-    cancelled: "red",
+    pending: "warning",
+    processing: "info",
+    completed: "success",
+    cancelled: "error",
   };
-  return colors[status] || "gray";
+  return colors[status] || "neutral";
 };
 
 const getStatusLabel = (status: string) => {
@@ -233,6 +233,21 @@ const formatDate = (dateString: string) => {
     hour: "numeric",
     minute: "2-digit",
   }).format(date);
+};
+
+const getOrderSummary = (order: any) => {
+  if (order.items && order.items.length > 0) {
+    return order.items
+      .map((item: any) => `${item.product?.name || "Unknown"} x${item.quantity}`)
+      .join(", ");
+  }
+
+  // Fallback for legacy orders
+  if (order.product) {
+    return `${order.product.name} x${order.quantity || 1}`;
+  }
+
+  return "No items";
 };
 
 // Load data on mount

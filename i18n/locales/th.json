@@ -31,6 +31,7 @@
     "filter": "กรอง",
     "loading": "กำลังโหลด...",
     "loadingProfile": "กำลังโหลดโปรไฟล์ของคุณ...",
+    "month": "เดือน",
     "noData": "ไม่มีข้อมูล",
     "noResults": "ไม่พบผลลัพธ์",
     "save": "บันทึก",
@@ -195,7 +196,8 @@
     "updateError": "อัปเดตผู้ใช้ล้มเหลว",
     "userCreated": "สร้างผู้ใช้สำเร็จ",
     "userDeleted": "ลบผู้ใช้สำเร็จ",
-    "userUpdated": "อัปเดตผู้ใช้สำเร็จ"
+    "userUpdated": "อัปเดตผู้ใช้สำเร็จ",
+    "status": "สถานะ"
   },
   "validationErrors": {
     "emailInvalid": "กรุณากรอกอีเมลที่ถูกต้อง",

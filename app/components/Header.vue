@@ -18,47 +18,7 @@
 
     <!-- Mobile User Menu -->
     <div class="flex items-center gap-x-3">
-      <!-- Language switcher -->
-      <div class="relative">
-        <button
-          type="button"
-          class="flex items-center gap-x-1 rounded-md bg-white px-2 py-1.5 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-          @click.stop="showLangMenu = !showLangMenu"
-        >
-          {{ selectedLocale.toUpperCase() }}
-          <UIcon name="i-heroicons-chevron-down" class="h-3 w-3 text-gray-400" />
-        </button>
-        <Transition
-          enter-active-class="transition duration-100 ease-out"
-          enter-from-class="transform scale-95 opacity-0"
-          enter-to-class="transform scale-100 opacity-100"
-          leave-active-class="transition duration-75 ease-in"
-          leave-from-class="transform scale-100 opacity-100"
-          leave-to-class="transform scale-95 opacity-0"
-        >
-          <div
-            v-if="showLangMenu"
-            v-click-outside="() => (showLangMenu = false)"
-            class="absolute right-0 z-10 mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-          >
-            <div class="py-1">
-              <button
-                v-for="lang in localeOptions"
-                :key="lang.value"
-                type="button"
-                class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                :class="{ 'bg-gray-50 font-semibold': selectedLocale === lang.value }"
-                @click="
-                  selectedLocale = lang.value;
-                  showLangMenu = false;
-                "
-              >
-                {{ lang.label }}
-              </button>
-            </div>
-          </div>
-        </Transition>
-      </div>
+
 
       <!-- User dropdown -->
       <div class="relative">
@@ -127,47 +87,7 @@
 
       <!-- User menu -->
       <div class="flex items-center gap-x-4 lg:gap-x-6">
-        <!-- Language switcher -->
-        <div class="relative">
-          <button
-            type="button"
-            class="flex items-center gap-x-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            @click.stop="showLangMenu = !showLangMenu"
-          >
-            {{ selectedLocale.toUpperCase() }}
-            <UIcon name="i-heroicons-chevron-down" class="h-4 w-4 text-gray-400" />
-          </button>
-          <Transition
-            enter-active-class="transition duration-100 ease-out"
-            enter-from-class="transform scale-95 opacity-0"
-            enter-to-class="transform scale-100 opacity-100"
-            leave-active-class="transition duration-75 ease-in"
-            leave-from-class="transform scale-100 opacity-100"
-            leave-to-class="transform scale-95 opacity-0"
-          >
-            <div
-              v-if="showLangMenu"
-              v-click-outside="() => (showLangMenu = false)"
-              class="absolute right-0 z-10 mt-2 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
-            >
-              <div class="py-1">
-                <button
-                  v-for="lang in localeOptions"
-                  :key="lang.value"
-                  type="button"
-                  class="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
-                  :class="{ 'bg-gray-50 font-semibold': selectedLocale === lang.value }"
-                  @click="
-                    selectedLocale = lang.value;
-                    showLangMenu = false;
-                  "
-                >
-                  {{ lang.label }}
-                </button>
-              </div>
-            </div>
-          </Transition>
-        </div>
+
 
         <!-- User dropdown -->
         <div class="relative">
@@ -209,16 +129,6 @@
               v-click-outside="() => (showUserMenu = false)"
               class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
             >
-              <div class="py-1">
-                <button
-                  type="button"
-                  class="flex w-full items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  @click="goToProfile"
-                >
-                  <UIcon name="i-heroicons-user-circle" class="h-5 w-5" />
-                  {{ t("nav.profile") }}
-                </button>
-              </div>
               <div class="border-t border-gray-100 py-1">
                 <button
                   type="button"
@@ -299,7 +209,6 @@ const handleLogout = async () => {
     await auth.logout();
 
     // Clear user profile state
-    const userProfile = useState("userProfile");
     userProfile.value = null;
 
     $toast.success(t("auth.logoutSuccess"));

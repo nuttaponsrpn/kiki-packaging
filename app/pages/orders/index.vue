@@ -30,20 +30,15 @@
         :placeholder="t('common.search')"
         class="flex-1"
       />
-      <USelectMenu
-        v-model="selectedStatus"
-        :options="statusOptions"
-        :placeholder="t('orders.status')"
+
+      <UInput
+        v-model="selectedMonth"
+        type="month"
+        :placeholder="t('common.month')"
         class="w-full sm:w-48"
       />
-      <UButton
-        v-if="selectedStatus || searchQuery"
-        icon="i-heroicons-x-mark"
-        variant="ghost"
-        @click="clearFilters"
-      >
-        Clear Filters
-      </UButton>
+
+
     </div>
 
     <!-- Loading State -->
@@ -55,10 +50,10 @@
     <div v-else-if="filteredOrders.length === 0" class="text-center py-12">
       <UIcon name="i-heroicons-inbox" class="text-6xl text-gray-400 mb-4" />
       <p class="text-gray-600 dark:text-gray-400 mb-4">
-        {{ searchQuery || selectedStatus ? t("common.noResults") : t("orders.noOrders") }}
+        {{ searchQuery || selectedMonth ? t("common.noResults") : t("orders.noOrders") }}
       </p>
       <UButton
-        v-if="!searchQuery && !selectedStatus"
+        v-if="!searchQuery && !selectedMonth"
         icon="i-heroicons-plus"
         @click="navigateTo('/orders/new')"
       >
@@ -87,10 +82,10 @@
             <div class="flex items-start justify-between">
               <div class="flex-1">
                 <h3 class="font-semibold text-gray-900 dark:text-white">
-                  {{ order.product?.name || 'Unknown Product' }}
+                  Order #{{ order.id.slice(0, 8) }}
                 </h3>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
-                  SKU: {{ order.product?.sku }}
+                  {{ getOrderSummary(order) }}
                 </p>
               </div>
               <UBadge
@@ -102,10 +97,6 @@
               </UBadge>
             </div>
             <div class="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <span class="text-gray-500 dark:text-gray-400">{{ t("orders.quantity") }}:</span>
-                <span class="ml-1 font-medium">{{ order.quantity }} {{ order.product?.unit }}</span>
-              </div>
               <div>
                 <span class="text-gray-500 dark:text-gray-400">{{ t("orders.total") }}:</span>
                 <span class="ml-1 font-medium">฿{{ order.total_price.toFixed(2) }}</span>
@@ -124,92 +115,103 @@
 
       <!-- Desktop Table View (md and above) -->
       <div class="hidden md:block bg-white dark:bg-gray-900 rounded-lg shadow overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead class="bg-gray-50 dark:bg-gray-800">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("orders.product") }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("orders.quantity") }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("orders.total") }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("orders.status") }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("orders.createdBy") }}
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("orders.createdAt") }}
-              </th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                {{ t("common.actions") }}
-              </th>
-            </tr>
-          </thead>
-          <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr
-              v-for="order in paginatedOrders"
-              :key="order.id"
-              class="hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900 dark:text-white">
-                  {{ order.product?.name || 'Unknown Product' }}
-                </div>
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                  SKU: {{ order.product?.sku }}
-                </div>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                {{ order.quantity }} {{ order.product?.unit }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                ฿{{ order.total_price.toFixed(2) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <UBadge
-                  :color="getStatusColor(order.status) as any"
-                  variant="subtle"
-                  size="sm"
-                >
-                  {{ t(`orders.${order.status}`) }}
-                </UBadge>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                {{ order.user?.name || 'Unknown' }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                {{ formatDate(order.created_at) }}
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                <UButton
-                  icon="i-heroicons-eye"
-                  size="xs"
-                  variant="ghost"
-                  @click="navigateTo(`/orders/${order.id}`)"
-                >
-                  {{ t("orders.viewDetails") }}
-                </UButton>
-                <UButton
-                  v-if="canDeleteOrder(order)"
-                  icon="i-heroicons-trash"
-                  size="xs"
-                  color="error"
-                  variant="ghost"
-                  @click="handleDeleteOrder(order.id)"
-                >
-                  {{ t("common.delete") }}
-                </UButton>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-800">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Order ID
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Items
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {{ t("orders.total") }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {{ t("orders.status") }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {{ t("orders.createdBy") }}
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {{ t("orders.createdAt") }}
+                </th>
+                <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  {{ t("common.actions") }}
+                </th>
+              </tr>
+            </thead>
+            <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr
+                v-for="order in paginatedOrders"
+                :key="order.id"
+                class="hover:bg-gray-50 dark:hover:bg-gray-800 transition"
+              >
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900 dark:text-white">
+                    #{{ order.id.slice(0, 8) }}
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div v-if="order.items && order.items.length > 0" class="space-y-1">
+                    <div
+                      v-for="item in order.items"
+                      :key="item.id"
+                      class="text-sm text-gray-900 dark:text-white"
+                    >
+                      {{ item.product?.name || "Unknown" }}
+                      <span class="text-gray-500">x{{ item.quantity }}</span>
+                    </div>
+                  </div>
+                  <div v-else-if="order.legacy_product" class="text-sm text-gray-900 dark:text-white">
+                    {{ order.legacy_product.name }}
+                    <span class="text-gray-500">x{{ order.quantity || 1 }}</span>
+                  </div>
+                  <div v-else class="text-sm text-gray-500 italic">No items</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                  ฿{{ order.total_price.toFixed(2) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <UBadge
+                    :color="getStatusColor(order.status) as any"
+                    variant="subtle"
+                    size="sm"
+                  >
+                    {{ t(`orders.${order.status}`) }}
+                  </UBadge>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                  {{ order.user?.name || 'Unknown' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                  {{ formatDate(order.created_at) }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                  <UButton
+                    icon="i-heroicons-eye"
+                    size="xs"
+                    variant="ghost"
+                    @click="navigateTo(`/orders/${order.id}`)"
+                  >
+                    {{ t("orders.viewDetails") }}
+                  </UButton>
+                  <UButton
+                    v-if="canDeleteOrder(order)"
+                    icon="i-heroicons-trash"
+                    size="xs"
+                    color="error"
+                    variant="ghost"
+                    @click="handleDeleteOrder(order.id)"
+                  >
+                    {{ t("common.delete") }}
+                  </UButton>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
         <!-- Pagination -->
         <div v-if="totalPages > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
@@ -282,6 +284,7 @@ const orders = ref<any[]>([]);
 const loading = ref(true);
 const searchQuery = ref("");
 const selectedStatus = ref<string | null>(null);
+const selectedMonth = ref<string>(new Date().toISOString().slice(0, 7));
 const currentPage = ref(1);
 const itemsPerPage = 20;
 
@@ -308,11 +311,15 @@ const filteredOrders = computed(() => {
     const query = searchQuery.value.toLowerCase();
     filtered = filtered.filter(
       (o) =>
-        o.product?.name.toLowerCase().includes(query) ||
-        o.product?.sku.toLowerCase().includes(query) ||
         o.user?.name.toLowerCase().includes(query) ||
-        o.notes?.toLowerCase().includes(query)
+        o.notes?.toLowerCase().includes(query) ||
+        o.items?.some((item: any) => item.product?.name.toLowerCase().includes(query))
     );
+  }
+
+  // Filter by month
+  if (selectedMonth.value) {
+    filtered = filtered.filter((o) => o.created_at.startsWith(selectedMonth.value));
   }
 
   return filtered;
@@ -336,20 +343,38 @@ const loadOrders = async () => {
   loading.value = false;
 };
 
+const getOrderSummary = (order: any) => {
+  if (order.items && order.items.length > 0) {
+    if (order.items.length === 1) {
+      const item = order.items[0];
+      return `${item.product?.name || "Unknown"} x${item.quantity}`;
+    }
+    return `${order.items.length} items`;
+  }
+
+  // Fallback for legacy orders
+  if (order.legacy_product) {
+    return `${order.legacy_product.name} x${order.quantity || 1}`;
+  }
+
+  return "No items";
+};
+
 const clearFilters = () => {
   searchQuery.value = "";
   selectedStatus.value = null;
+  selectedMonth.value = "";
   currentPage.value = 1;
 };
 
 const getStatusColor = (status: string) => {
   const colors: Record<string, string> = {
-    pending: "yellow",
-    processing: "blue",
-    completed: "green",
-    cancelled: "red",
+    pending: "warning",
+    processing: "info",
+    completed: "success",
+    cancelled: "error",
   };
-  return colors[status] || "gray";
+  return colors[status] || "neutral";
 };
 
 const formatDate = (dateString: string) => {
@@ -383,7 +408,7 @@ const handleExport = () => {
 };
 
 // Reset to page 1 when filters change
-watch([searchQuery, selectedStatus], () => {
+watch([searchQuery, selectedMonth], () => {
   currentPage.value = 1;
 });
 

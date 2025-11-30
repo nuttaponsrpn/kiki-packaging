@@ -1,173 +1,84 @@
 <template>
-  <div class="max-w-3xl mx-auto">
+  <div class="max-w-[1200px] mx-auto pb-24">
     <!-- Header -->
+    <div class="flex items-center justify-between mb-8">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          {{ t("orders.createNew") }}
+        </h1>
+        <p class="text-gray-500 dark:text-gray-400">Select products and quantities to create an order</p>
+      </div>
+      <UButton
+        icon="i-heroicons-x-mark"
+        color="neutral"
+        variant="ghost"
+        size="lg"
+        @click="navigateTo('/orders')"
+      >
+        Cancel
+      </UButton>
+    </div>
+
+    <!-- Search -->
     <div class="mb-6">
-      <div class="flex items-center gap-3 mb-2">
-        <UButton
-          icon="i-heroicons-arrow-left"
-          size="sm"
-          color="gray"
-          variant="ghost"
-          @click="navigateTo('/orders')"
-        >
-          Back
-        </UButton>
-      </div>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ t("orders.createNew") }}
-      </h1>
+      <UInput
+        v-model="searchQuery"
+        icon="i-heroicons-magnifying-glass"
+        placeholder="Search products..."
+        size="xl"
+        :ui="{ base: 'rounded-2xl' }"
+      />
     </div>
 
-    <!-- Loading Products -->
-    <div v-if="loadingProducts" class="flex justify-center items-center py-12">
-      <UIcon name="i-heroicons-arrow-path" class="animate-spin text-4xl text-orange-600" />
-      <span class="ml-3">{{ t("common.loading") }}</span>
-    </div>
+    <!-- Order Table -->
+    <OrderTable
+      :products="filteredProducts"
+      v-model="quantities"
+    />
 
-    <!-- No Products Available -->
-    <UCard v-else-if="productOptions.length === 0">
-      <div class="text-center py-8">
-        <UIcon name="i-heroicons-inbox" class="text-6xl text-gray-400 mb-4" />
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-          {{ t("orders.noProductsAvailable") }}
-        </h3>
-        <p class="text-gray-600 dark:text-gray-400 mb-4">
-          There are no packaging products available with stock. Please add products first or check stock levels.
-        </p>
-        <div class="flex justify-center gap-3">
-          <UButton
-            v-if="userProfile?.role === 'admin'"
-            icon="i-heroicons-plus"
-            @click="navigateTo('/packaging')"
-          >
-            Add Packaging Products
-          </UButton>
-          <UButton
-            color="gray"
-            variant="ghost"
-            @click="navigateTo('/orders')"
-          >
-            Back to Orders
-          </UButton>
-        </div>
-      </div>
-    </UCard>
-
-    <!-- Form -->
-    <UCard v-else>
-      <form @submit.prevent="handleSubmit" class="space-y-6">
-        <!-- Product Selection -->
-        <UFormGroup :label="t('orders.product')" required>
-          <USelectMenu
-            v-model="selectedProduct"
-            :options="productOptions"
-            :placeholder="t('orders.selectProduct')"
-            value-attribute="value"
-            option-attribute="label"
-            searchable
-            required
-          />
-          <template #help>
-            <div v-if="selectedProduct" class="mt-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <div class="flex items-center justify-between text-sm">
-                <span class="text-gray-600 dark:text-gray-400">Available stock:</span>
-                <span class="font-semibold text-gray-900 dark:text-white">
-                  {{ getProductStock(selectedProduct) }} {{ getProductUnit(selectedProduct) }}
-                </span>
-              </div>
-              <div class="flex items-center justify-between text-sm mt-1">
-                <span class="text-gray-600 dark:text-gray-400">Price per unit:</span>
-                <span class="font-semibold text-gray-900 dark:text-white">
-                  ฿{{ getProductPrice(selectedProduct).toFixed(2) }}
-                </span>
-              </div>
-            </div>
-          </template>
-        </UFormGroup>
-
-        <!-- Quantity -->
-        <UFormGroup :label="t('orders.quantity')" required>
-          <UInput
-            v-model.number="formData.quantity"
-            type="number"
-            :placeholder="t('orders.quantity')"
-            :min="1"
-            :max="getProductStock(selectedProduct)"
-            required
-          />
-          <template #help>
-            <div v-if="selectedProduct && formData.quantity > getProductStock(selectedProduct)" class="mt-2 text-sm text-red-600">
-              {{ t("orders.insufficientStock") }} - {{ t("packaging.stock") }}: {{ getProductStock(selectedProduct) }}
-            </div>
-            <div v-else-if="formData.quantity && selectedProduct" class="mt-2 text-sm">
-              <span class="text-gray-600 dark:text-gray-400">{{ t("orders.total") }}: </span>
-              <span class="font-semibold text-gray-900 dark:text-white">
-                ฿{{ calculateTotal().toFixed(2) }}
-              </span>
-            </div>
-          </template>
-        </UFormGroup>
-
-        <!-- Notes -->
-        <UFormGroup :label="t('orders.notes')">
-          <UTextarea
-            v-model="formData.notes"
-            :placeholder="t('orders.notes')"
-            :rows="4"
-          />
-        </UFormGroup>
-
-        <!-- Summary -->
-        <div v-if="selectedProduct && formData.quantity" class="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-          <h3 class="font-semibold text-gray-900 dark:text-white mb-3">Order Summary</h3>
-          <div class="space-y-2 text-sm">
-            <div class="flex justify-between">
-              <span class="text-gray-600 dark:text-gray-400">Product:</span>
-              <span class="text-gray-900 dark:text-white">{{ getProductName(selectedProduct) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-600 dark:text-gray-400">Quantity:</span>
-              <span class="text-gray-900 dark:text-white">
-                {{ formData.quantity }} {{ getProductUnit(selectedProduct) }}
-              </span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-gray-600 dark:text-gray-400">Price per unit:</span>
-              <span class="text-gray-900 dark:text-white">฿{{ getProductPrice(selectedProduct).toFixed(2) }}</span>
-            </div>
-            <div class="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
-              <div class="flex justify-between font-semibold text-base">
-                <span class="text-gray-900 dark:text-white">Total:</span>
-                <span class="text-orange-600">฿{{ calculateTotal().toFixed(2) }}</span>
-              </div>
-            </div>
+    <!-- Bottom Bar -->
+    <div
+      class="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4 shadow-lg z-20"
+    >
+      <div class="max-w-[1200px] mx-auto flex items-center justify-between">
+        <div class="flex items-center gap-6">
+          <div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">Selected Items</div>
+            <div class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedItemsCount }} items</div>
+          </div>
+          <div class="h-8 w-px bg-gray-200 dark:bg-gray-700"></div>
+          <div>
+            <div class="text-sm text-gray-500 dark:text-gray-400">Total Amount</div>
+            <div class="text-2xl font-black text-primary-600">฿{{ totalAmount.toLocaleString() }}</div>
           </div>
         </div>
 
-        <!-- Actions -->
-        <div class="flex justify-end gap-3 pt-4">
-          <UButton
-            type="button"
-            color="gray"
-            variant="ghost"
-            @click="navigateTo('/orders')"
-          >
-            {{ t("common.cancel") }}
-          </UButton>
-          <UButton
-            type="submit"
-            :loading="submitting"
-            :disabled="!selectedProduct || !formData.quantity || formData.quantity > getProductStock(selectedProduct)"
-          >
-            {{ t("common.create") }}
-          </UButton>
-        </div>
-      </form>
-    </UCard>
+        <UButton
+          size="xl"
+          color="primary"
+          class="px-8 font-bold rounded-xl shadow-lg shadow-primary-500/20"
+          :disabled="selectedItemsCount === 0"
+          @click="showReviewModal = true"
+        >
+          Review Order
+        </UButton>
+      </div>
+    </div>
+
+    <!-- Review Modal -->
+    <OrderReviewModal
+      v-model:open="showReviewModal"
+      :items="selectedItems"
+      :submitting="submitting"
+      @confirm="handleCreateOrder"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import OrderTable from "~/components/pos/OrderTable.vue";
+import OrderReviewModal from "~/components/pos/OrderReviewModal.vue";
+
 definePageMeta({
   layout: "default",
 });
@@ -177,99 +88,72 @@ const { getAllPackaging } = usePackaging();
 const { createOrder } = useOrders();
 
 // State
-const loadingProducts = ref(true);
 const products = ref<any[]>([]);
-const selectedProduct = ref<string | null>(null);
+const quantities = ref<Record<string, number>>({});
+const searchQuery = ref("");
+const showReviewModal = ref(false);
 const submitting = ref(false);
 
-const formData = ref({
-  quantity: 1,
-  notes: "",
+// Computed
+const filteredProducts = computed(() => {
+  if (!searchQuery.value) return products.value;
+  const query = searchQuery.value.toLowerCase();
+  return products.value.filter(
+    (p) =>
+      p.name.toLowerCase().includes(query) ||
+      p.sku.toLowerCase().includes(query)
+  );
 });
 
-// Computed
-const productOptions = computed(() => {
-  return products.value
-    .filter((p) => p.is_active && p.stock_quantity > 0)
-    .map((p) => ({
-      label: `${p.name} (${p.sku}) - Stock: ${p.stock_quantity} ${p.unit}`,
-      value: p.id,
-    }));
+const selectedItems = computed(() => {
+  return Object.entries(quantities.value).map(([id, qty]) => {
+    const product = products.value.find((p) => p.id === id);
+    return {
+      ...product,
+      quantity: qty,
+    };
+  });
+});
+
+const selectedItemsCount = computed(() => {
+  return Object.values(quantities.value).reduce((sum, qty) => sum + qty, 0);
+});
+
+const totalAmount = computed(() => {
+  return selectedItems.value.reduce((sum, item) => sum + item.quantity * item.unit_price, 0);
 });
 
 // Methods
 const loadProducts = async () => {
-  loadingProducts.value = true;
   const result = await getAllPackaging({ activeOnly: true });
   if (result.success) {
-    console.log("All active packaging products:", result.data);
-    console.log("Total active products:", result.data.length);
     products.value = result.data.filter((p: any) => p.stock_quantity > 0);
-    console.log("Products with stock > 0:", products.value.length);
-
-    if (result.data.length === 0) {
-      console.warn("No active packaging products found in database");
-    } else if (products.value.length === 0) {
-      console.warn("Active products exist but all have 0 stock");
-    }
-  } else {
-    console.error("Error loading packaging products:", result.error);
   }
-  loadingProducts.value = false;
 };
 
-const getProduct = (productId: string | null) => {
-  if (!productId) return null;
-  return products.value.find((p) => p.id === productId);
-};
-
-const getProductName = (productId: string | null) => {
-  const product = getProduct(productId);
-  return product?.name || "";
-};
-
-const getProductStock = (productId: string | null) => {
-  const product = getProduct(productId);
-  return product?.stock_quantity || 0;
-};
-
-const getProductUnit = (productId: string | null) => {
-  const product = getProduct(productId);
-  return product?.unit || "";
-};
-
-const getProductPrice = (productId: string | null) => {
-  const product = getProduct(productId);
-  return product?.unit_price || 0;
-};
-
-const calculateTotal = () => {
-  if (!selectedProduct.value || !formData.value.quantity) return 0;
-  const price = getProductPrice(selectedProduct.value);
-  return price * formData.value.quantity;
-};
-
-const handleSubmit = async () => {
-  if (!selectedProduct.value) return;
-
+const handleCreateOrder = async (details: { notes: string; paymentMethod: "cash" | "transfer" }) => {
   submitting.value = true;
 
-  const data = {
-    packaging_product_id: selectedProduct.value,
-    quantity: formData.value.quantity,
-    notes: formData.value.notes || undefined,
+  const orderData = {
+    items: selectedItems.value.map((item) => ({
+      productId: item.id,
+      quantity: item.quantity,
+      price: item.unit_price,
+    })),
+    paymentMethod: details.paymentMethod,
+    notes: details.notes,
   };
 
-  const result = await createOrder(data);
+  const result = await createOrder(orderData);
 
   if (result.success) {
     navigateTo("/orders");
   }
 
   submitting.value = false;
+  showReviewModal.value = false;
 };
 
-// Load products on mount
 onMounted(() => {
   loadProducts();
 });
