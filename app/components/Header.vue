@@ -1,18 +1,18 @@
 <template>
   <!-- Mobile/Tablet header -->
   <div
-    class="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden"
+    class="sticky top-0 z-40 flex items-center gap-x-6 bg-white dark:bg-gray-800 px-4 py-4 shadow-sm sm:px-6 lg:hidden"
   >
     <!-- Mobile menu button -->
     <button
       type="button"
-      class="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+      class="-m-2.5 p-2.5 text-gray-700 dark:text-gray-200 lg:hidden"
       @click="emit('toggleSidebar')"
     >
       <span class="sr-only">Open sidebar</span>
       <UIcon name="i-heroicons-bars-3" class="h-6 w-6" aria-hidden="true" />
     </button>
-    <div class="flex-1 text-sm font-semibold leading-6 text-gray-900">
+    <div class="flex-1 text-sm font-semibold leading-6 text-gray-900 dark:text-white">
       {{ t("common.appName") }}
     </div>
 
@@ -24,12 +24,12 @@
       <div class="relative">
         <button
           type="button"
-          class="-m-1.5 flex items-center p-1.5 hover:bg-gray-50 rounded-lg"
+          class="-m-1.5 flex items-center p-1.5 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg"
           @click.stop="showUserMenu = !showUserMenu"
         >
           <span class="sr-only">Open user menu</span>
-          <div class="h-8 w-8 rounded-full bg-orange-100 flex items-center justify-center">
-            <span class="text-sm font-semibold text-orange-600">
+          <div class="h-8 w-8 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center">
+            <span class="text-sm font-semibold text-orange-600 dark:text-orange-400">
               {{ userInitials }}
             </span>
           </div>
@@ -46,18 +46,18 @@
           <div
             v-if="showUserMenu"
             v-click-outside="() => (showUserMenu = false)"
-            class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
+            class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 dark:ring-gray-700"
           >
             <div class="py-1">
-              <div class="px-4 py-2 border-b border-gray-100">
-                <p class="text-sm font-semibold text-gray-900">{{ userProfile?.name || "User" }}</p>
-                <p class="text-xs text-gray-500 truncate">{{ userProfile?.email }}</p>
+              <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ userProfile?.name || "User" }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ userProfile?.email }}</p>
               </div>
             </div>
             <div class="border-gray-100 py-1">
               <button
                 type="button"
-                class="flex w-full items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                class="flex w-full items-center gap-x-3 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700/50"
                 @click="handleLogout"
               >
                 <UIcon name="i-heroicons-arrow-right-on-rectangle" class="h-5 w-5" />
@@ -72,7 +72,7 @@
 
   <!-- Desktop header -->
   <div
-    class="hidden lg:flex sticky top-0 z-40 items-center gap-x-4 border-b border-gray-200 bg-white px-4 py-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
+    class="hidden lg:flex sticky top-0 z-40 items-center gap-x-4 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8"
   >
     <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
       <div class="flex flex-1" />
@@ -91,7 +91,7 @@
             <span class="sr-only">Open user menu</span>
             <div class="flex items-center gap-x-3">
               <span class="hidden lg:flex lg:items-center">
-                <span class="text-sm font-semibold leading-6 text-gray-900" aria-hidden="true">
+                <span class="text-sm font-semibold leading-6 text-gray-900 dark:text-white" aria-hidden="true">
                   {{ userProfile?.name || "User" }}
                 </span>
                 <UIcon
@@ -121,7 +121,7 @@
               v-click-outside="() => (showUserMenu = false)"
               class="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5"
             >
-              <div class="border-t border-gray-100 py-1">
+              <div class="border-t border-gray-100 dark:border-gray-700 py-1">
                 <button
                   type="button"
                   class="flex w-full items-center gap-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"

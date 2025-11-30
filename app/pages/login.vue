@@ -1,7 +1,7 @@
 <template>
   <NuxtLayout name="auth">
-    <div class="bg-white shadow-lg rounded-lg p-8">
-      <h2 class="text-size-24 font-bold text-gray-900 mb-6">
+    <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+      <h2 class="text-size-24 font-bold text-gray-900 dark:text-white mb-6">
         {{ t("auth.loginTitle") }}
       </h2>
 
@@ -31,7 +31,7 @@
       </form>
 
       <div class="mt-6 text-center">
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-gray-600 dark:text-gray-400">
           {{ t("auth.demoNote") }}
         </p>
       </div>

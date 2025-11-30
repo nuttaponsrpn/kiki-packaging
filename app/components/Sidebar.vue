@@ -2,11 +2,11 @@
   <!-- Sidebar for desktop -->
   <div class="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-64 lg:flex-col">
     <div
-      class="flex grow flex-col gap-y-5 overflow-y-auto bg-white border-r border-gray-200 px-6 py-4"
+      class="flex grow flex-col gap-y-5 overflow-y-auto bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 px-6 py-4"
     >
       <!-- Logo -->
       <div class="flex h-16 shrink-0 items-center">
-        <h2 class="text-size-20 font-bold text-orange-600">
+        <h2 class="text-size-20 font-bold text-orange-600 dark:text-orange-500">
           {{ t("common.appName") }}
         </h2>
       </div>
@@ -21,8 +21,8 @@
                   :to="item.href"
                   :class="[
                     isActive(item.href)
-                      ? 'bg-orange-50 text-orange-600'
-                      : 'text-gray-700 hover:text-orange-600 hover:bg-gray-50',
+                      ? 'bg-orange-50 dark:bg-orange-900/10 text-orange-600 dark:text-orange-500'
+                      : 'text-gray-700 dark:text-gray-200 hover:text-orange-600 dark:hover:text-orange-500 hover:bg-gray-50 dark:hover:bg-gray-800/50',
                     'group flex gap-x-3 rounded-md p-3 text-sm font-semibold leading-6',
                   ]"
                 >
@@ -30,8 +30,8 @@
                     :name="item.icon"
                     :class="[
                       isActive(item.href)
-                        ? 'text-orange-600'
-                        : 'text-gray-400 group-hover:text-orange-600',
+                        ? 'text-orange-600 dark:text-orange-500'
+                        : 'text-gray-400 dark:text-gray-500 group-hover:text-orange-600 dark:group-hover:text-orange-500',
                       'h-6 w-6 shrink-0',
                     ]"
                     aria-hidden="true"
@@ -73,7 +73,7 @@
     >
       <div
         v-if="isOpen"
-        class="fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-xl lg:hidden overflow-y-auto"
+        class="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 shadow-xl lg:hidden overflow-y-auto"
       >
         <div class="flex grow flex-col gap-y-5 px-6 pb-4">
           <div class="flex h-16 shrink-0 items-center justify-between">

@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <div>
-        <h1 class="text-size-24 font-bold text-gray-900">{{ t("users.title") }}</h1>
-        <p class="text-gray-600 mt-1">{{ t("users.adminOnly") }}</p>
+        <h1 class="text-size-24 font-bold text-gray-900 dark:text-white">{{ t("users.title") }}</h1>
+        <p class="text-gray-600 dark:text-gray-400 mt-1">{{ t("users.adminOnly") }}</p>
       </div>
       <MyButton
         v-if="isAdmin"
@@ -17,16 +17,16 @@
 
     <!-- Pending Invitations Section -->
     <div v-if="isAdmin && pendingInvitations.length > 0" class="mb-6">
-      <h2 class="text-lg font-semibold text-gray-900 mb-3">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
         {{ t("invitations.pendingInvitations") }}
       </h2>
-      <div class="bg-white shadow-md rounded-lg overflow-hidden">
+      <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
         <div class="overflow-x-auto">
           <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            <thead class="bg-gray-50 dark:bg-gray-700/50">
               <tr>
                 <th
-                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
                 >
                   {{ t("users.name") }}
                 </th>
@@ -58,16 +58,16 @@
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               <tr
                 v-for="invitation in pendingInvitations"
                 :key="invitation.id"
-                class="hover:bg-gray-50"
+                class="hover:bg-gray-50 dark:hover:bg-gray-700/30"
               >
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                   {{ invitation.name }}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                   {{ invitation.email }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -82,7 +82,7 @@
                     {{ t(`users.${invitation.role}`) }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                   {{ formatDate(invitation.created_at) }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -170,12 +170,12 @@
                     </div>
                   </div>
                   <div class="ml-4">
-                    <div class="text-sm font-medium text-gray-900">{{ user.name }}</div>
+                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ user.name }}</div>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm text-gray-900">{{ user.email }}</div>
+                <div class="text-sm text-gray-900 dark:text-white">{{ user.email }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
@@ -242,9 +242,9 @@
           </Transition>
 
           <div class="flex items-center justify-center min-h-screen px-4">
-            <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6 z-10">
+            <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 z-10">
               <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold text-gray-900">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                   {{ t("invitations.inviteUser") }}
                 </h3>
                 <button class="text-gray-400 hover:text-gray-600" @click="closeInviteModal">
@@ -269,12 +269,12 @@
                 />
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {{ t("users.role") }}
                   </label>
                   <select
                     v-model="inviteForm.role"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     required
                   >
                     <option value="">{{ t("users.selectRole") }}</option>
@@ -370,7 +370,7 @@
                       type="checkbox"
                       class="form-checkbox h-5 w-5 text-primary-600 rounded focus:ring-primary-500 border-gray-300"
                     />
-                    <span class="text-sm font-medium text-gray-700">{{ t("users.active") }}</span>
+                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t("users.active") }}</span>
                   </label>
                 </div>
 

@@ -1,6 +1,7 @@
 <template>
   <div>
     <NuxtRouteAnnouncer />
+    <VitePwaManifest />
     <GlobalLoadingOverlay />
     <NuxtLayout>
       <NuxtPage />
